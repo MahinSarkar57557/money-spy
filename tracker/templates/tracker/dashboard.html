@@ -21,7 +21,7 @@
     <div class="flex justify-between items-center mb-3 relative z-10">
         <div class="flex items-center space-x-1 bg-gray-200 dark:bg-gray-800 px-3 py-1.5 rounded-full shadow-sm text-xs font-bold text-gray-700 dark:text-gray-300">
             <i class="fas fa-filter text-[10px] text-gray-500"></i>
-            <span>All Accounts</span>
+            <span data-translate="all_accounts">All Accounts</span>
         </div>
         
         <div class="flex items-center space-x-2 bg-gray-200 dark:bg-gray-800 px-3 py-1.5 rounded-full shadow-sm">
@@ -37,7 +37,7 @@
         <!-- Clear Today Data Button -->
         <form action="{% url 'clear_today_transactions' %}" method="POST" onsubmit="return confirm('আজকের দিনের সমস্ত হিসাব কি ডিলিট করতে চান?');">
             {% csrf_token %}
-            <button type="submit" title="আজকের হিসাব মুছুন" class="bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-200 p-2 rounded-full shadow-sm transition text-xs flex items-center justify-center cursor-pointer">
+            <button type="submit" data-translate-title="clear_today_tooltip" title="আজকের হিসাব মুছুন" class="bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-200 p-2 rounded-full shadow-sm transition text-xs flex items-center justify-center cursor-pointer">
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>
@@ -49,8 +49,8 @@
         
         <!-- Main Balance -->
         <div class="mb-4">
-            <p class="text-xs font-semibold text-blue-100 uppercase tracking-wider">Balance</p>
-            <h2 class="text-2xl font-black tracking-tight mt-1">{{ balance|floatformat:0 }} Taka</h2>
+            <p class="text-xs font-semibold text-blue-100 uppercase tracking-wider" data-translate="balance">Balance</p>
+            <h2 class="text-2xl font-black tracking-tight mt-1">{{ balance|floatformat:0 }} <span data-translate="currency_taka">Taka</span></h2>
         </div>
 
         <!-- Divider Line -->
@@ -59,12 +59,12 @@
         <!-- Income & Expense Row inside Card -->
         <div class="grid grid-cols-2 gap-4">
             <div>
-                <p class="text-[11px] font-semibold text-blue-200">Income</p>
-                <p class="text-base font-extrabold text-emerald-300 mt-0.5">{{ total_income|floatformat:0 }} Taka</p>
+                <p class="text-[11px] font-semibold text-blue-200" data-translate="income">Income</p>
+                <p class="text-base font-extrabold text-emerald-300 mt-0.5">{{ total_income|floatformat:0 }} <span data-translate="currency_taka">Taka</span></p>
             </div>
             <div>
-                <p class="text-[11px] font-semibold text-blue-200">Expense</p>
-                <p class="text-base font-extrabold text-rose-300 mt-0.5">{{ total_expense|floatformat:0 }} Taka</p>
+                <p class="text-[11px] font-semibold text-blue-200" data-translate="expense">Expense</p>
+                <p class="text-base font-extrabold text-rose-300 mt-0.5">{{ total_expense|floatformat:0 }} <span data-translate="currency_taka">Taka</span></p>
             </div>
         </div>
     </div>
@@ -80,9 +80,9 @@
 
             <!-- Inner White Circle with Centered Total Expense Text -->
             <div class="absolute w-[110px] h-[110px] bg-white dark:bg-gray-900 rounded-full shadow-md flex flex-col items-center justify-center text-center z-10 border-4 border-gray-50 dark:border-gray-800 p-1">
-                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-tight">TOTAL EXPENSE</span>
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-tight" data-translate="total_expense_label">TOTAL EXPENSE</span>
                 <span class="text-xs font-extrabold text-rose-600 dark:text-rose-400 mt-0.5 leading-tight">
-                    {{ total_expense|floatformat:0 }} Taka
+                    {{ total_expense|floatformat:0 }} <span data-translate="currency_taka">Taka</span>
                 </span>
             </div>
 
@@ -127,10 +127,10 @@
 <div id="transactionModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center transition-opacity">
     <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl max-h-[80vh] flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-800 pb-2">
-            <h3 id="modalTitle" class="text-sm font-bold text-gray-800 dark:text-gray-100">নতুন খরচ যোগ করুন</h3>
+            <h3 id="modalTitle" data-translate-bn="নতুন খরচ যোগ করুন" data-translate-en="Add New Expense" class="text-sm font-bold text-gray-800 dark:text-gray-100">নতুন খরচ যোগ করুন</h3>
             <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg font-bold cursor-pointer">&times;</button>
         </div>
-        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center">একটি ক্যাটাগরি সিলেক্ট করুন</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center" data-translate="select_category_prompt">একটি ক্যাটাগরি সিলেক্ট করুন</p>
         <div class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow">
             {% for cat in all_categories %}
             <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer">
@@ -151,20 +151,20 @@
             <input type="hidden" name="category" id="inputCategoryId">
             <h3 id="selectedCategoryName" class="text-sm font-bold text-emerald-600 dark:text-emerald-400 text-center mb-3">Category</h3>
             <div class="mb-3">
-                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1">পরিমাণ (Amount Taka)</label>
+                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="amount_label">পরিমাণ (Amount Taka)</label>
                 <input type="number" step="1" name="amount" required placeholder="0" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
             <div class="mb-3">
-                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1">তারিখ (Date)</label>
-                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="date-input-field w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500">
+                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="date_label">তারিখ (Date)</label>
+                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="date-input-field w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500 box-border">
             </div>
             <div class="mb-4">
-                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1">নোট (Description - Optional)</label>
-                <input type="text" name="description" placeholder="কী বাবদ খরচ/আয়?" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500">
+                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="note_label">নোট (Description - Optional)</label>
+                <input type="text" name="description" data-translate-placeholder="note_placeholder" placeholder="কী বাবদ খরচ/আয়?" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500">
             </div>
             <div class="flex space-x-2">
-                <button type="button" onclick="closeAmountModal()" class="w-1/2 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition cursor-pointer">বাতিল</button>
-                <button type="submit" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer">সেভ করুন</button>
+                <button type="button" onclick="closeAmountModal()" class="w-1/2 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition cursor-pointer" data-translate="cancel_btn">বাতিল</button>
+                <button type="submit" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer" data-translate="save_btn">সেভ করুন</button>
             </div>
         </form>
     </div>
@@ -183,7 +183,18 @@
     function openModal(type) {
         currentTxType = type;
         document.getElementById('inputTxType').value = type;
-        document.getElementById('modalTitle').innerText = type === 'expense' ? 'নতুন খরচ যোগ করুন' : 'নতুন আয় যোগ করুন';
+        
+        const currentLang = localStorage.getItem('language') || 'bn';
+        const titleEl = document.getElementById('modalTitle');
+        if (type === 'expense') {
+            titleEl.innerText = currentLang === 'en' ? 'Add New Expense' : 'নতুন খরচ যোগ করুন';
+            titleEl.setAttribute('data-translate-bn', 'নতুন খরচ যোগ করুন');
+            titleEl.setAttribute('data-translate-en', 'Add New Expense');
+        } else {
+            titleEl.innerText = currentLang === 'en' ? 'Add New Income' : 'নতুন আয় যোগ করুন';
+            titleEl.setAttribute('data-translate-bn', 'নতুন আয় যোগ করুন');
+            titleEl.setAttribute('data-translate-en', 'Add New Income');
+        }
         
         // Background Scroll Lock Enabled
         document.body.classList.add('modal-open');
@@ -227,6 +238,48 @@
     function closeAmountModal() {
         document.getElementById('amountModal').classList.add('hidden');
         document.body.classList.remove('modal-open'); // Background Scroll Unlock
+    }
+
+    // Add Translations dictionary mapping for dashboard elements
+    if (typeof globalTranslations !== 'undefined') {
+        globalTranslations.bn.all_accounts = "All Accounts";
+        globalTranslations.en.all_accounts = "All Accounts";
+        
+        globalTranslations.bn.clear_today_tooltip = "আজকের হিসাব মুছুন";
+        globalTranslations.en.clear_today_tooltip = "Clear today's transactions";
+
+        globalTranslations.bn.currency_taka = "Taka";
+        globalTranslations.en.currency_taka = "Taka";
+
+        globalTranslations.bn.total_expense_label = "TOTAL EXPENSE";
+        globalTranslations.en.total_expense_label = "TOTAL EXPENSE";
+
+        globalTranslations.bn.select_category_prompt = "একটি ক্যাটাগরি সিলেক্ট করুন";
+        globalTranslations.en.select_category_prompt = "Select a category";
+
+        globalTranslations.bn.amount_label = "পরিমাণ (Amount Taka)";
+        globalTranslations.en.amount_label = "Amount (Taka)";
+
+        globalTranslations.bn.date_label = "তারিখ (Date)";
+        globalTranslations.en.date_label = "Date";
+
+        globalTranslations.bn.note_label = "নোট (Description - Optional)";
+        globalTranslations.en.note_label = "Note (Description - Optional)";
+
+        globalTranslations.bn.note_placeholder = "কী বাবদ খরচ/আয়?";
+        globalTranslations.en.note_placeholder = "What is this for?";
+
+        globalTranslations.bn.cancel_btn = "বাতিল";
+        globalTranslations.en.cancel_btn = "Cancel";
+
+        globalTranslations.bn.save_btn = "সেভ করুন";
+        globalTranslations.en.save_btn = "Save";
+
+        // Re-apply translation immediately
+        const currentLang = localStorage.getItem('language') || 'bn';
+        if (typeof applyGlobalTranslation === 'function') {
+            applyGlobalTranslation(currentLang);
+        }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
