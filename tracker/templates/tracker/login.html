@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Quantum Money</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandDark: '#0F172A', // Deep Navy Blue
+                        brandAccent: '#38BDF8', // Sky Blue
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom animation for money icons */
+        @keyframes floatMoney {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0.1; }
+            50% { transform: translate(50px, 100px) rotate(180deg); opacity: 0.15; }
+            100% { transform: translate(-50px, 200px) rotate(360deg); opacity: 0.1; }
+        }
+        .money-icon {
+            animation: floatMoney 15s infinite linear;
+            position: absolute;
+        }
+        /* Glassmorphism container */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+    </style>
+</head>
+<body class="h-full font-sans bg-brandDark text-gray-200 relative overflow-hidden flex items-center justify-center p-4">
+
+    <!-- Animated Money Background Icons -->
+    <!-- These icons will move in the background -->
+    <div class="absolute inset-0 z-0 opacity-10">
+        <!-- Icon 1: Money Bag -->
+        <img src="https://img.icons8.com/fluency/96/000000/money-bag-euro.png" class="money-icon" style="top: 10%; left: 5%; animation-delay: 0s; width: 60px;">
+        <!-- Icon 2: Cash Flow Arrow -->
+        <img src="https://img.icons8.com/fluency/96/000000/cash-flow.png" class="money-icon" style="top: 20%; left: 80%; animation-delay: -5s; width: 80px;">
+        <!-- Icon 3: Credit Card -->
+        <img src="https://img.icons8.com/fluency/96/000000/bank-card-back-side.png" class="money-icon" style="top: 60%; left: 15%; animation-delay: -2s; width: 50px;">
+        <!-- Icon 4: Growth Chart -->
+        <img src="https://img.icons8.com/fluency/96/000000/increase.png" class="money-icon" style="top: 75%; left: 70%; animation-delay: -8s; width: 70px;">
+        <!-- Icon 5: Another Money Bag -->
+        <img src="https://img.icons8.com/fluency/96/000000/money-bag.png" class="money-icon" style="top: 40%; left: 45%; animation-delay: -12s; width: 40px;">
+    </div>
+
+    <!-- Login Container (Glassmorphism Card) -->
+    <div class="w-full max-w-md glass-card rounded-3xl p-8 z-10 relative shadow-2xl">
+        
+        <!-- App Logo & Header -->
+        <div class="text-center mb-8">
+            <!-- Your app icon -->
+            <img src="{% static 'tracker/icon.png' %}" alt="Quantum Money Logo" class="w-24 h-24 mx-auto mb-4 p-2 bg-gray-900 rounded-3xl shadow-lg">
+            <h1 class="text-4xl font-extrabold text-white tracking-tight">Quantum<span class="text-brandAccent">Money</span></h1>
+            <p class="text-gray-400 mt-2">Your personal finance tracker. Please log in.</p>
+        </div>
+
+        <!-- Login Form -->
+        <form method="POST" action="{% url 'login' %}" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Display Errors if any -->
+            {% if form.errors %}
+            <div class="bg-red-500/10 border border-red-500 text-red-400 p-4 rounded-xl text-sm text-center">
+                <p class="font-semibold">Login Failed</p>
+                <p>Please check your username and password.</p>
+            </div>
+            {% endif %}
+
+            <!-- Username Field -->
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" required
+                       class="w-full px-5 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-brandAccent focus:border-brandAccent transition duration-150 placeholder-gray-500"
+                       placeholder="Enter your username">
+            </div>
+
+            <!-- Password Field -->
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" required
+                       class="w-full px-5 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-brandAccent focus:border-brandAccent transition duration-150 placeholder-gray-500"
+                       placeholder="Enter your password">
+            </div>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-brandAccent bg-gray-900 border-gray-700 rounded focus:ring-brandAccent">
+                    <label for="remember-me" class="ml-2 block text-gray-300">Remember me</label>
+                </div>
+                <a href="#" class="text-brandAccent hover:text-sky-400 transition duration-150">Forgot password?</a>
+            </div>
+
+            <!-- Login Button -->
+            <div>
+                <button type="submit" 
+                        class="w-full flex justify-center items-center px-5 py-4 bg-brandAccent text-brandDark font-bold rounded-xl shadow-lg hover:bg-sky-400 transition duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brandAccent focus:ring-offset-brandDark">
+                    Log In
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Sign up link -->
+        <div class="mt-8 text-center text-gray-400 text-sm">
+            <p>Don't have an account yet?</p>
+            <a href="{% url 'signup' %}" class="font-semibold text-brandAccent hover:text-sky-400 transition duration-150">Create one for free</a>
+        </div>
+    </div>
+
+</body>
+</html>

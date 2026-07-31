@@ -3,6 +3,8 @@ from datetime import date, datetime
 from decimal import Decimal
 import math
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from django.db import models
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
@@ -11,7 +13,21 @@ from .forms import BudgetForm
 from .models import Budget, Category, Transaction
 
 
-@login_required(login_url='/admin/login/')
+# নতুন ব্যবহারকারী রেজিস্টার করার ভিউ
+def signup_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}! You can now log in.')
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'tracker/signup.html', {'form': form})
+
+
+@login_required(login_url='login')
 def dashboard_view(request):
   today = timezone.now().date()
   current_month = int(request.GET.get('month', today.month))
@@ -135,7 +151,7 @@ def dashboard_view(request):
   return render(request, 'tracker/dashboard.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='login')
 def calendar_view(request):
   today = timezone.localdate()
   current_month = int(request.GET.get('month', today.month))
@@ -209,7 +225,7 @@ def calendar_view(request):
   return render(request, 'tracker/calendar.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='login')
 def add_transaction(request):
   if request.method == 'POST':
     transaction_type = request.POST.get('transaction_type')
@@ -235,7 +251,7 @@ def add_transaction(request):
   return redirect('dashboard')
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='login')
 def day_detail(request, year, month, day):
   target_date = date(year, month, day)
   transactions = Transaction.objects.filter(user=request.user, date=target_date)
@@ -246,14 +262,14 @@ def day_detail(request, year, month, day):
   return render(request, 'tracker/day_detail.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='login')
 def clear_today_transactions(request):
   today = timezone.localdate()
   Transaction.objects.filter(user=request.user, date=today).delete()
   return redirect('dashboard')
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='login')
 def budget_view(request):
   today = date.today()
   current_month = int(request.GET.get('month', today.month))
@@ -339,7 +355,7 @@ def budget_view(request):
   return render(request, 'tracker/budget.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='login')
 def edit_budget(request, pk):
   budget_item = get_object_or_404(Budget, pk=pk, user=request.user)
 
@@ -360,6 +376,6 @@ def edit_budget(request, pk):
   return render(request, 'tracker/edit_budget.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url='login')
 def settings_view(request):
   return render(request, 'tracker/settings.html')
