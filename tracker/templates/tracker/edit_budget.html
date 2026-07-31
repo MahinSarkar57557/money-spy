@@ -1,0 +1,32 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden flex flex-col p-6 gap-5 transition-colors duration-300">
+    
+    <div class="flex items-center pb-3 border-b border-gray-100 dark:border-gray-800">
+        <a href="{% url 'budget' %}?month={{ budget_item.month }}&year={{ budget_item.year }}" class="text-gray-600 dark:text-gray-300 mr-3 cursor-pointer">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h2 class="text-sm font-bold text-gray-800 dark:text-white">
+            বাজেট এডিট করুন ({{ budget_item.category.name }})
+        </h2>
+    </div>
+
+    <form method="POST" class="flex flex-col gap-4">
+        {% csrf_token %}
+        <div>
+            <label class="text-[11px] font-semibold text-gray-600 dark:text-gray-400">নতুন বাজেট পরিমাণ (৳)</label>
+            <input type="number" name="amount" value="{{ budget_item.amount }}" required class="w-full mt-1.5 px-3.5 py-2.5 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-emerald-500 text-gray-800 dark:text-white">
+        </div>
+
+        <input type="hidden" name="month" value="{{ budget_item.month }}">
+        <input type="hidden" name="year" value="{{ budget_item.year }}">
+        <input type="hidden" name="category" value="{{ budget_item.category.id }}">
+
+        <div class="flex gap-2 mt-2">
+            <a href="{% url 'budget' %}?month={{ budget_item.month }}&year={{ budget_item.year }}" class="w-1/2 py-2.5 text-center text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200 transition">বাতিল</a>
+            <button type="submit" class="w-1/2 py-2.5 text-xs font-semibold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition shadow-md cursor-pointer">আপডেট করুন</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

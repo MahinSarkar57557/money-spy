@@ -1,0 +1,92 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col p-4 gap-3">
+
+    <!-- Header: Month Selector -->
+    <div class="flex justify-between items-center">
+        <h2 class="text-xs font-bold text-gray-800 flex items-center gap-1">
+            <i class="fas fa-calendar-alt text-emerald-600"></i> মাসিক ক্যালেন্ডার
+        </h2>
+        <div class="flex items-center space-x-2 bg-gray-100 px-3 py-1 rounded-full shadow-xs">
+            <a href="?month={% if current_month == 1 %}12{% else %}{{ current_month|add:'-1' }}{% endif %}&year={% if current_month == 1 %}{{ current_year|add:'-1' }}{% else %}{{ current_year }}{% endif %}" class="text-gray-600 hover:text-emerald-600">
+                <i class="fas fa-chevron-left text-[10px]"></i>
+            </a>
+            <span class="text-[11px] font-bold text-gray-700">{{ month_name }} {{ current_year }}</span>
+            <a href="?month={% if current_month == 12 %}1{% else %}{{ current_month|add:'1' }}{% endif %}&year={% if current_month == 12 %}{{ current_year|add:'1' }}{% else %}{{ current_year }}{% endif %}" class="text-gray-600 hover:text-emerald-600">
+                <i class="fas fa-chevron-right text-[10px]"></i>
+            </a>
+        </div>
+        <div class="w-4"></div>
+    </div>
+
+    <!-- Calendar Grid Header (Days of week) -->
+    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-400">
+        <span>সোম</span>
+        <span>মঙ্গল</span>
+        <span>বুধ</span>
+        <span>বৃহস্পতি</span>
+        <span>শুক্র</span>
+        <span>শনি</span>
+        <span>রবি</span>
+    </div>
+
+    <!-- Calendar Days Grid -->
+    <div class="grid grid-cols-7 gap-1.5">
+        {% for item in calendar_days %}
+            {% if item.day == "" %}
+                <div class="min-h-[38px]"></div>
+            {% else %}
+                <a href="{% url 'day_detail' current_year current_month item.day %}" 
+                   class="flex flex-col items-center justify-center p-1 rounded-xl transition border text-center min-h-[38px] shadow-xs 
+                   {% if item.is_today %} border-emerald-500 bg-emerald-50/70 {% else %} border-gray-100 bg-gray-50/70 hover:bg-gray-100 {% endif %}">
+                   
+                    <span class="text-xs font-bold {% if item.is_today %} text-emerald-600 {% else %} text-gray-700 {% endif %}">
+                        {{ item.day }}
+                    </span>
+                    
+                    {% if item.expense %}
+                    <span class="text-[8px] font-semibold text-rose-500 leading-tight mt-0.5">
+                        -{{ item.expense|floatformat:0 }}
+                    </span>
+                    {% else %}
+                    <span class="text-[7px] text-transparent leading-tight mt-0.5">-</span>
+                    {% endif %}
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- LAST 7 DAYS EXPENSE TREND GRAPH SECTION -->
+    <div class="bg-gray-50/80 border border-gray-100 rounded-2xl p-3 shadow-xs">
+        <div class="flex justify-between items-center mb-1.5">
+            <span class="text-[11px] font-bold text-gray-700 flex items-center gap-1">
+                <i class="fas fa-chart-bar text-emerald-600"></i> গত ৭ দিনের খরচ
+            </span>
+            <span class="text-[10px] text-gray-400 font-medium">Daily Trend</span>
+        </div>
+        
+        <!-- Bar Graph Container (Height increased to h-32) -->
+        <div class="flex justify-between items-end h-32 pt-5 px-1 gap-1.5">
+            {% if last_7_days %}
+                {% for day_data in last_7_days %}
+                <div class="flex flex-col items-center flex-1 h-full justify-end">
+                    <span class="text-[9.5px] font-bold text-gray-700 mb-1 leading-none">
+                        ৳{{ day_data.expense|floatformat:0 }}
+                    </span>
+                    <div class="w-full max-w-[18px] bg-rose-500 rounded-t-md transition-all duration-300 shadow-xs" 
+                         style="height: {% if day_data.height_percentage %}{{ day_data.height_percentage }}%{% else %}8%{% endif %}; min-height: 10px;">
+                    </div>
+                    <span class="text-[9.5px] font-bold text-gray-600 mt-1.5">{{ day_data.day_name }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="w-full flex items-center justify-center text-[10px] text-gray-400 h-full">
+                    কোনো ডাটা পাওয়া যায়নি
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

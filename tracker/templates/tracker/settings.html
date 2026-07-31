@@ -1,0 +1,100 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden flex flex-col p-5 gap-4 transition-colors duration-300">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+        <div>
+            <h2 class="text-sm font-bold text-gray-800 dark:text-white flex items-center gap-1.5">
+                <i class="fas fa-cog text-indigo-600 text-base"></i> <span data-translate="settings_title">সেটিংস</span>
+            </h2>
+            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5" data-translate="settings_subtitle">আপনার অ্যাপের পছন্দসমূহ কাস্টমাইজ করুন</p>
+        </div>
+    </div>
+
+    <!-- Settings Options List -->
+    <div class="flex flex-col gap-3">
+        
+        <!-- Language Option -->
+        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex justify-between items-center transition-colors">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm">
+                    <i class="fas fa-language"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-gray-800 dark:text-white" data-translate="lang_heading">ভাষা / Language</h4>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400" data-translate="lang_desc">বাংলা সিলেক্ট করা আছে</p>
+                </div>
+            </div>
+            <select id="langSelect" class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-indigo-500 shadow-xs cursor-pointer">
+                <option value="bn">বাংলা</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <!-- Dark Mode Option -->
+        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex justify-between items-center transition-colors">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 flex items-center justify-center text-sm">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-gray-800 dark:text-white" data-translate="dark_heading">ডার্ক মোড / Dark Mode</h4>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400" data-translate="dark_desc">চোখের আরামদায়ক থিম</p>
+                </div>
+            </div>
+            <!-- Toggle Switch -->
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="darkModeToggle" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+            </label>
+        </div>
+
+    </div>
+
+    <!-- App Info & Branding Card -->
+    <div class="bg-gradient-to-r from-indigo-900 via-indigo-950 to-gray-900 border border-indigo-500/20 rounded-2xl p-4 text-center mt-2 shadow-lg relative overflow-hidden flex flex-col items-center gap-1">
+        <div class="absolute -right-6 -top-6 w-20 h-20 bg-indigo-500/20 rounded-full blur-xl"></div>
+        <h4 class="text-xs font-bold text-indigo-100 tracking-wide">Quantum Money</h4>
+        <p class="text-[10px] text-indigo-300 font-medium">Version 1.0 | All calculations in Taka</p>
+        <div class="w-full h-[1px] bg-indigo-500/20 my-1"></div>
+        <p class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
+            Developed by <span class="text-indigo-400 font-bold normal-case">Mahin Sarkar</span>
+        </p>
+    </div>
+
+</div>
+
+<!-- Settings Specific JavaScript -->
+<script>
+    // Dark Mode Sync
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (document.documentElement.classList.contains('dark')) {
+        darkModeToggle.checked = true;
+    } else {
+        darkModeToggle.checked = false;
+    }
+
+    darkModeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    // Language Selector Sync
+    const langSelect = document.getElementById('langSelect');
+    const currentLang = localStorage.getItem('language') || 'bn';
+    langSelect.value = currentLang;
+
+    langSelect.addEventListener('change', function() {
+        const selectedLang = this.value;
+        localStorage.setItem('language', selectedLang);
+        applyGlobalTranslation(selectedLang);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,252 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="flex flex-col h-full justify-between px-4 py-3 relative overflow-hidden" style="background-color: #f8fafc; min-h-screen;">
+    
+    <!-- MONEY SYMBOLS & MONEY-RELATED ICONS BACKGROUND PATTERN -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: hidden; z-index: 0;">
+        <span style="position: absolute; top: 3%; left: 6%; font-size: 45px; font-weight: 900; color: #64748b; opacity: 0.10; user-select: none;">৳</span>
+        <span style="position: absolute; top: 5%; right: 8%; font-size: 48px; font-weight: 900; color: #64748b; opacity: 0.10; user-select: none;">$</span>
+        <i class="fas fa-wallet" style="position: absolute; top: 18%; left: 8%; font-size: 34px; color: #64748b; opacity: 0.08; user-select: none;"></i>
+        <i class="fas fa-coins" style="position: absolute; top: 22%; right: 10%; font-size: 36px; color: #64748b; opacity: 0.08; user-select: none;"></i>
+        <i class="fas fa-money-bill-wave" style="position: absolute; top: 42%; left: 4%; font-size: 38px; color: #64748b; opacity: 0.08; user-select: none;"></i>
+        <span style="position: absolute; top: 45%; right: 6%; font-size: 50px; font-weight: 900; color: #64748b; opacity: 0.10; user-select: none;">৳</span>
+        <span style="position: absolute; top: 68%; left: 6%; font-size: 42px; font-weight: 900; color: #64748b; opacity: 0.09; user-select: none;">€</span>
+        <i class="fas fa-piggy-bank" style="position: absolute; top: 66%; right: 8%; font-size: 36px; color: #64748b; opacity: 0.08; user-select: none;"></i>
+        <i class="fas fa-credit-card" style="position: absolute; bottom: 12%; left: 10%; font-size: 34px; color: #64748b; opacity: 0.08; user-select: none;"></i>
+        <span style="position: absolute; bottom: 14%; right: 12%; font-size: 45px; font-weight: 900; color: #64748b; opacity: 0.10; user-select: none;">$</span>
+    </div>
+    
+    <!-- Top Month Selector Bar -->
+    <div class="flex justify-between items-center mb-3 relative z-10">
+        <div class="flex items-center space-x-1 bg-gray-100 px-3 py-1.5 rounded-full shadow-sm text-xs font-bold text-gray-700">
+            <i class="fas fa-filter text-[10px] text-gray-500"></i>
+            <span>All Accounts</span>
+        </div>
+        
+        <div class="flex items-center space-x-2 bg-gray-100 px-3 py-1.5 rounded-full shadow-sm">
+            <a href="?month={% if current_month == 1 %}12{% else %}{{ current_month|add:'-1' }}{% endif %}&year={% if current_month == 1 %}{{ current_year|add:'-1' }}{% else %}{{ current_year }}{% endif %}" class="text-gray-600 hover:text-emerald-600">
+                <i class="fas fa-chevron-left text-xs"></i>
+            </a>
+            <span class="text-xs font-bold text-gray-700">{{ month_name }} {{ current_year }}</span>
+            <a href="?month={% if current_month == 12 %}1{% else %}{{ current_month|add:'1' }}{% endif %}&year={% if current_month == 12 %}{{ current_year|add:'1' }}{% else %}{{ current_year }}{% endif %}" class="text-gray-600 hover:text-emerald-600">
+                <i class="fas fa-chevron-right text-xs"></i>
+            </a>
+        </div>
+        
+        <button class="text-gray-700 hover:text-black">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
+    </div>
+
+    <!-- LARGER MONEYFY STYLE BLUE GRADIENT BALANCE CARD -->
+    <div class="bg-gradient-to-tr from-blue-700 via-indigo-600 to-blue-500 text-white p-6 rounded-3xl shadow-xl mb-3 relative overflow-hidden z-10">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+        
+        <!-- Main Balance -->
+        <div class="mb-4">
+            <p class="text-xs font-semibold text-blue-100 uppercase tracking-wider">Balance</p>
+            <h2 class="text-2xl font-black tracking-tight mt-1">{{ balance|floatformat:0 }} Taka</h2>
+        </div>
+
+        <!-- Divider Line -->
+        <div class="border-t border-white/25 my-3"></div>
+
+        <!-- Income & Expense Row inside Card -->
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-[11px] font-semibold text-blue-200">Income</p>
+                <p class="text-base font-extrabold text-emerald-300 mt-0.5">{{ total_income|floatformat:0 }} Taka</p>
+            </div>
+            <div>
+                <p class="text-[11px] font-semibold text-blue-200">Expense</p>
+                <p class="text-base font-extrabold text-rose-300 mt-0.5">{{ total_expense|floatformat:0 }} Taka</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXACT MONEYFY STYLE PIE CHART & RADIAL ICONS SECTION -->
+    <div class="flex-grow flex flex-col items-center justify-center relative my-8 py-6 z-10">
+        <div class="relative w-[260px] h-[260px] flex items-center justify-center">
+            
+            <!-- Accurate Dynamic Conic Gradient Pie Chart Slices -->
+            <div class="absolute inset-0 rounded-full shadow-inner border-4 border-white"
+                 style="background: conic-gradient({{ gradient_css }});">
+            </div>
+
+            <!-- Inner White Circle with Centered Total Expense Text -->
+            <div class="absolute w-[110px] h-[110px] bg-white rounded-full shadow-md flex flex-col items-center justify-center text-center z-10 border-4 border-gray-50 p-1">
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-tight">TOTAL EXPENSE</span>
+                <span class="text-xs font-extrabold text-rose-600 mt-0.5 leading-tight">
+                    {{ total_expense|floatformat:0 }} Taka
+                </span>
+            </div>
+
+            <!-- Radially Positioned Icons -->
+            {% for cat in categories %}
+            <div class="absolute z-20"
+                 style="top: {{ cat.top }}%; left: {{ cat.left }}%; transform: translate(-50%, -50%);">
+                
+                <div class="flex flex-col items-center" style="transform: rotate({{ cat.angle }}deg);">
+                    
+                    <!-- Icon Badge -->
+                    <div class="w-8 h-8 bg-white border-2 rounded-full flex items-center justify-center shadow-md text-xs" style="border-color: {{ cat.color }}; color: {{ cat.color }};">
+                        <i class="{{ cat.icon }}"></i>
+                    </div>
+                    
+                    <!-- Pointer Line -->
+                    <div class="w-[1.5px] h-4 bg-gray-500 mt-[-1px]"></div>
+                    
+                    <!-- Percentage Label -->
+                    <span class="text-[9px] font-extrabold text-gray-700 bg-white/95 px-1 rounded shadow-sm mt-0.5 whitespace-nowrap" style="transform: rotate(-{{ cat.angle }}deg);">
+                        {{ cat.percentage }}%
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons (Expense [-] and Income [+]) -->
+    <div class="flex justify-center items-center space-x-8 mt-8 mb-4 relative z-10">
+        <button onclick="openModal('expense')" class="w-16 h-16 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-xl transition transform hover:scale-105 cursor-pointer">
+            <i class="fas fa-minus text-xl"></i>
+        </button>
+        <button onclick="openModal('income')" class="w-16 h-16 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transition transform hover:scale-105 cursor-pointer">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
+    </div>
+
+</div>
+
+<!-- TRANSACTION CATEGORY SELECTION MODAL -->
+<div id="transactionModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center transition-opacity">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl max-h-[80vh] flex flex-col">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h3 id="modalTitle" class="text-sm font-bold text-gray-800">নতুন খরচ যোগ করুন</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-lg font-bold cursor-pointer">&times;</button>
+        </div>
+        <p class="text-xs font-medium text-gray-500 mb-3 text-center">একটি ক্যাটাগরি সিলেক্ট করুন</p>
+        <div class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow">
+            {% for cat in all_categories %}
+            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 hover:bg-emerald-50 border border-gray-100 hover:border-emerald-300 rounded-2xl transition cursor-pointer">
+                <i class="{{ cat.icon }} text-lg text-emerald-600 mb-1.5"></i>
+                <span class="text-[11px] font-semibold text-gray-700 text-center truncate w-full">{{ cat.name }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- AMOUNT INPUT SUB-MODAL -->
+<div id="amountModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white w-80 rounded-3xl p-5 shadow-2xl">
+        <form method="POST" action="{% url 'add_transaction' %}">
+            {% csrf_token %}
+            <input type="hidden" name="transaction_type" id="inputTxType" value="expense">
+            <input type="hidden" name="category" id="inputCategoryId">
+            <h3 id="selectedCategoryName" class="text-sm font-bold text-emerald-600 text-center mb-3">Category</h3>
+            <div class="mb-3">
+                <label class="block text-[11px] font-bold text-gray-600 mb-1">পরিমাণ (Amount Taka)</label>
+                <input type="number" step="1" name="amount" required placeholder="0" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
+            </div>
+            <div class="mb-3">
+                <label class="block text-[11px] font-bold text-gray-600 mb-1">তারিখ (Date)</label>
+                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+            <div class="mb-4">
+                <label class="block text-[11px] font-bold text-gray-600 mb-1">নোট (Description - Optional)</label>
+                <input type="text" name="description" placeholder="কী বাবদ খরচ/আয়?" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+            <div class="flex space-x-2">
+                <button type="button" onclick="closeAmountModal()" class="w-1/2 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition cursor-pointer">বাতিল</button>
+                <button type="submit" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer">সেভ করুন</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentTxType = 'expense';
+    let selectedCatNameText = "";
+
+    const incomeCategoryNames = [
+        "job / salary", "business", "pocket money", "freelancing", "tuition", 
+        "investments", "rental income", "gift / bonus", "selling items", 
+        "loan refund", "commission", "side hustle", "awards / grants", "dividends", "other income"
+    ];
+
+    function openModal(type) {
+        currentTxType = type;
+        document.getElementById('inputTxType').value = type;
+        document.getElementById('modalTitle').innerText = type === 'expense' ? 'নতুন খরচ যোগ করুন' : 'নতুন আয় যোগ করুন';
+        
+        const categoryButtons = document.querySelectorAll('#transactionModal .grid button');
+        categoryButtons.forEach(btn => {
+            const catName = btn.querySelector('span').innerText.toLowerCase().trim();
+            const isIncomeCat = incomeCategoryNames.some(inc => catName.includes(inc) || inc.includes(catName));
+            
+            if (type === 'income') {
+                if (isIncomeCat) {
+                    btn.style.display = 'flex';
+                } else {
+                    btn.style.display = 'none';
+                }
+            } else {
+                if (!isIncomeCat) {
+                    btn.style.display = 'flex';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+        });
+
+        document.getElementById('transactionModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('transactionModal').classList.add('hidden');
+    }
+
+    function selectCategory(catId, catName) {
+        document.getElementById('inputCategoryId').value = catId;
+        document.getElementById('selectedCategoryName').innerText = catName;
+        selectedCatNameText = catName;
+        document.getElementById('transactionModal').classList.add('hidden');
+        document.getElementById('amountModal').classList.remove('hidden');
+    }
+
+    function closeAmountModal() {
+        document.getElementById('amountModal').classList.add('hidden');
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const expenseForm = document.querySelector("#amountModal form");
+        if (expenseForm) {
+            expenseForm.addEventListener("submit", function() {
+                const txType = document.getElementById('inputTxType').value;
+                
+                if (txType === 'expense') {
+                    const amountInput = expenseForm.querySelector("input[name='amount']").value;
+                    const expenseAmount = parseFloat(amountInput) || 0;
+
+                    if (expenseAmount > 0 && selectedCatNameText) {
+                        let savedBudgets = JSON.parse(localStorage.getItem('user_budgets')) || [];
+                        
+                        savedBudgets = savedBudgets.map(b => {
+                            if (b.name.toLowerCase().trim() === selectedCatNameText.toLowerCase().trim() || 
+                                b.name.toLowerCase().includes(selectedCatNameText.toLowerCase()) || 
+                                selectedCatNameText.toLowerCase().includes(b.name.toLowerCase())) {
+                                b.spent = (b.spent || 0) + expenseAmount;
+                            }
+                            return b;
+                        });
+
+                        localStorage.setItem('user_budgets', JSON.stringify(savedBudgets));
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

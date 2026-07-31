@@ -1,0 +1,155 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden flex flex-col p-6 gap-5 transition-colors duration-300">
+
+    <!-- Header Section -->
+    <div class="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
+        <div>
+            <h2 class="text-sm font-bold text-gray-800 dark:text-white flex items-center gap-1.5">
+                <i class="fas fa-wallet text-emerald-600 text-base"></i> <span data-translate="budget_title">মাসিক বাজেট প্ল্যানার</span>
+            </h2>
+        </div>
+        <!-- Month Selector / Display -->
+        <div class="flex items-center gap-1.5 text-xs font-semibold bg-gray-50 dark:bg-gray-800 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200">
+            <i class="fas fa-chevron-left text-[10px] cursor-pointer"></i>
+            <span>{{ month_name }} {{ current_year }}</span>
+            <i class="fas fa-chevron-right text-[10px] cursor-pointer"></i>
+        </div>
+    </div>
+
+    <!-- Overview Card -->
+    <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-5 text-white shadow-lg flex flex-col gap-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-[10px] text-emerald-100 uppercase tracking-wider font-medium" data-translate="financial_summary">এই মাসের আর্থিক বিবরণী</p>
+                <h3 class="text-xs font-bold mt-0.5" data-translate="budget_expense_overview">বাজেট ও খরচ ওভারভিউ</h3>
+            </div>
+            <!-- Set Budget Button (Triggers Modal) -->
+            <button onclick="openBudgetModal()" class="bg-white text-emerald-800 hover:bg-emerald-50 text-[10px] font-bold px-3.5 py-2 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer">
+                <span data-translate="set_budget_btn">+ বাজেট সেট করুন</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-1">
+            <div class="bg-black/15 backdrop-blur-xs p-3.5 rounded-2xl border border-white/10">
+                <p class="text-[10px] text-emerald-200 flex items-center gap-1">
+                    <i class="fas fa-arrow-down text-rose-300 text-[9px]"></i> <span data-translate="total_expense">মোট খরচ</span>
+                </p>
+                <h4 class="text-sm font-bold mt-1">৳{{ total_spent_amount|floatformat:0 }}</h4>
+            </div>
+            <div class="bg-black/15 backdrop-blur-xs p-3.5 rounded-2xl border border-white/10">
+                <p class="text-[10px] text-emerald-200 flex items-center gap-1">
+                    <i class="fas fa-wallet text-amber-300 text-[9px]"></i> <span data-translate="total_budget">মোট বাজেট</span>
+                </p>
+                <h4 class="text-sm font-bold mt-1">৳{{ total_budget_amount|floatformat:0 }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget List Section -->
+    <div class="flex flex-col gap-3">
+        {% for item in budget_data %}
+        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex flex-col gap-2.5 transition-colors">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">
+                        <i class="{{ item.budget.category.icon|default:'fas fa-wallet' }}"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                            {{ item.budget.category.name }}
+                            <!-- ছোট এডিট বাটন (পেন্সিল আইকন) -->
+                            <a href="{% url 'edit_budget' item.budget.id %}" class="text-gray-400 hover:text-emerald-600 text-[11px] transition cursor-pointer" title="Edit Budget">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                        </h4>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5"><span data-translate="label_budget">বাজেট</span>: ৳{{ item.budget.amount|floatformat:0 }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <h4 class="text-xs font-bold text-gray-800 dark:text-white">৳{{ item.spent|floatformat:0 }}</h4>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5"><span data-translate="label_remaining">বাকি</span>: ৳{{ item.remaining|floatformat:0 }}</p>
+                </div>
+            </div>
+
+            <!-- Progress Bar with Dynamic Color based on rem_percentage -->
+            <div class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden mt-1">
+                <div class="h-full rounded-full 
+                    {% if item.remaining <= 0 %}
+                        bg-rose-500
+                    {% elif item.rem_percentage >= 70 %}
+                        bg-emerald-500
+                    {% elif item.rem_percentage >= 30 %}
+                        bg-amber-500
+                    {% else %}
+                        bg-rose-500
+                    {% endif %}" 
+                    style="width: {{ item.percentage }}%;">
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-6 text-gray-400 text-xs">
+            কোনো বাজেট সেট করা হয়নি। উপরে "+ বাজেট সেট করুন" এ ক্লিক করে বাজেট যোগ করুন।
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- Set Budget Popup Modal -->
+<div id="budgetModal" class="fixed inset-0 bg-black/50 backdrop-blur-xs hidden justify-center items-center z-50 p-4">
+    <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col gap-4 border border-gray-100 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+            <h3 class="text-sm font-bold text-gray-800 dark:text-white" data-translate="modal_set_budget_title">Set Monthly Budget</h3>
+            <button onclick="closeBudgetModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-sm cursor-pointer">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form method="POST" class="flex flex-col gap-3">
+            {% csrf_token %}
+            <input type="hidden" name="month" value="{{ current_month }}">
+            <input type="hidden" name="year" value="{{ current_year }}">
+
+            <div>
+                <label class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 block mb-1.5" data-translate="select_category_label">Select Category</label>
+                <div class="grid grid-cols-3 gap-2.5 overflow-y-auto max-h-56 p-1">
+                    {% for cat in all_categories %}
+                    <label class="cursor-pointer">
+                        <input type="radio" name="category" value="{{ cat.id }}" required class="peer hidden">
+                        <div class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 peer-checked:bg-emerald-50 peer-checked:border-emerald-600 peer-checked:ring-2 peer-checked:ring-emerald-500 border border-gray-200 dark:border-gray-700 rounded-2xl transition text-center gap-1">
+                            <i class="{{ cat.icon }} text-lg text-emerald-600 mb-1"></i>
+                            <span class="text-[10px] font-semibold text-gray-700 dark:text-white truncate w-full">{{ cat.name }}</span>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[11px] font-semibold text-gray-600 dark:text-gray-400" data-translate="budget_amount_label">Budget Amount (৳)</label>
+                <input type="number" name="amount" placeholder="e.g. 5000" required class="w-full mt-1 px-3.5 py-2 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-emerald-500 text-gray-800 dark:text-white">
+            </div>
+
+            <div class="flex gap-2 mt-2">
+                <button type="button" onclick="closeBudgetModal()" class="w-1/2 py-2.5 text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200 transition cursor-pointer" data-translate="btn_cancel">Cancel</button>
+                <button type="submit" class="w-1/2 py-2.5 text-xs font-semibold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition shadow-md cursor-pointer" data-translate="btn_save_budget">Save Budget</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openBudgetModal() {
+        document.getElementById('budgetModal').classList.remove('hidden');
+        document.getElementById('budgetModal').classList.add('flex');
+    }
+
+    function closeBudgetModal() {
+        document.getElementById('budgetModal').classList.remove('flex');
+        document.getElementById('budgetModal').classList.add('hidden');
+    }
+</script>
+{% endblock %}

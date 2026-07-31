@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="bn" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Money</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    <!-- Instant Dark Mode Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
+    
+    <!-- Full Screen Mobile App Container -->
+    <div class="min-h-screen w-full bg-white dark:bg-gray-950 flex flex-col justify-between relative overflow-x-hidden transition-colors duration-300">
+        
+        <!-- Main Scrollable Content Area -->
+        <div class="flex-1 w-full pb-24 overflow-y-auto">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <!-- Bottom Navigation Bar (Fixed Full-Width) -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-3 px-6 flex justify-around items-center text-gray-600 dark:text-gray-400 shadow-xl z-50 transition-colors duration-300">
+            <a href="{% url 'dashboard' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                <i class="fas fa-chart-pie text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium" data-translate="nav_home">হোম</span>
+            </a>
+            <a href="{% url 'calendar' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                <i class="fas fa-calendar-alt text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium" data-translate="nav_calendar">ক্যালেন্ডার</span>
+            </a>
+            <a href="{% url 'budget' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                <i class="fas fa-wallet text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium" data-translate="nav_budget">বাজেট</span>
+            </a>
+            <a href="{% url 'settings' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                <i class="fas fa-cog text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium" data-translate="nav_settings">সেটিংস</span>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Global Translation Dictionary & Script -->
+    <script>
+        const globalTranslations = {
+            bn: {
+                nav_home: "হোম",
+                nav_calendar: "ক্যালেন্ডার",
+                nav_budget: "বাজেট",
+                nav_settings: "সেটিংস",
+                settings_title: "সেটিংস",
+                settings_subtitle: "আপনার অ্যাপের পছন্দসমূহ কাস্টমাইজ করুন",
+                lang_heading: "ভাষা / Language",
+                lang_desc: "বাংলা সিলেক্ট করা আছে",
+                dark_heading: "ডার্ক মোড / Dark Mode",
+                dark_desc: "চোখের আরামদায়ক থিম",
+                app_version: "ভার্শন ১.০ | সম্পূর্ণ টাকায় হিসাব",
+                budget_title: "মাসিক বাজেট প্ল্যানার",
+                financial_summary: "এই মাসের আর্থিক বিবরণী",
+                budget_expense_overview: "বাজেট ও খরচ ওভারভিউ",
+                set_budget_btn: "+ বাজেট সেট করুন",
+                total_expense: "মোট খরচ",
+                total_budget: "মোট বাজেট",
+                label_budget: "বাজেট",
+                label_remaining: "বাকি",
+                modal_set_budget_title: "মাসিক বাজেট সেট করুন",
+                label_month: "মাস",
+                label_year: "বছর",
+                select_category_label: "ক্যাটাগরি সিলেক্ট করুন",
+                budget_amount_label: "বাজেটের পরিমাণ (৳)",
+                btn_cancel: "বাতিল",
+                btn_save_budget: "বাজেট সংরক্ষণ করুন",
+                calendar_title: "মাসিক ক্যালেন্ডার",
+                recent_expense: "গত ৭ দিনের খরচ",
+                daily_trend: "Daily Trend"
+            },
+            en: {
+                nav_home: "Home",
+                nav_calendar: "Calendar",
+                nav_budget: "Budget",
+                nav_settings: "Settings",
+                settings_title: "Settings",
+                settings_subtitle: "Customize your app preferences",
+                lang_heading: "Language / ভাষা",
+                lang_desc: "English is selected",
+                dark_heading: "Dark Mode / ডার্ক মোড",
+                dark_desc: "Eye-friendly comfortable theme",
+                app_version: "Version 1.0 | All calculations in Taka",
+                budget_title: "Monthly Budget Planner",
+                financial_summary: "This Month's Financial Summary",
+                budget_expense_overview: "Budget & Expense Overview",
+                set_budget_btn: "+ Set Budget",
+                total_expense: "Total Expense",
+                total_budget: "Total Budget",
+                label_budget: "Budget",
+                label_remaining: "Remaining",
+                modal_set_budget_title: "Set Monthly Budget",
+                label_month: "Month",
+                label_year: "Year",
+                select_category_label: "Select Category",
+                budget_amount_label: "Budget Amount (৳)",
+                btn_cancel: "Cancel",
+                btn_save_budget: "Save Budget",
+                calendar_title: "Monthly Calendar",
+                recent_expense: "Last 7 Days Expense",
+                daily_trend: "Daily Trend"
+            }
+        };
+
+        function applyGlobalTranslation(lang) {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (globalTranslations[lang] && globalTranslations[lang][key]) {
+                    el.textContent = globalTranslations[lang][key];
+                }
+            });
+        }
+
+        // Apply on every page load based on LocalStorage
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedLang = localStorage.getItem('language') || 'bn';
+            applyGlobalTranslation(savedLang);
+        });
+    </script>
+</body>
+</html>
