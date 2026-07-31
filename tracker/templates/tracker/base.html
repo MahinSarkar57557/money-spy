@@ -15,6 +15,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+
+        /* ১. মডাল ওপেন থাকলে ব্যাকগ্রাউন্ড স্ক্রল লক করার জন্য */
+        body.modal-open {
+            overflow: hidden !important;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* ২. ডার্ক মোডে টেক্সট ও ফর্ম ফিল্ড ঠিক করার জন্য */
+        .dark-mode, .dark-mode body {
+            color: #f3f4f6 !important;
+        }
+        .dark-mode input, .dark-mode select, .dark-mode textarea {
+            background-color: #1f2937 !important;
+            color: #ffffff !important;
+            border-color: #374151 !important;
+        }
+
+        /* ৩. তারিখের (Date) বক্স বাইরে চলে যাওয়া রোধ করতে */
+        input[type="date"], .date-input-field {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
     </style>
     <!-- Instant Dark Mode Script -->
     <script>
