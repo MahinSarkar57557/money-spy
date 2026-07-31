@@ -2,6 +2,7 @@ import calendar
 from datetime import date, datetime
 from decimal import Decimal
 import math
+from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
@@ -10,6 +11,7 @@ from .forms import BudgetForm
 from .models import Budget, Category, Transaction
 
 
+@login_required(login_url='/admin/login/')
 def dashboard_view(request):
   today = timezone.now().date()
   current_month = int(request.GET.get('month', today.month))
@@ -133,6 +135,7 @@ def dashboard_view(request):
   return render(request, 'tracker/dashboard.html', context)
 
 
+@login_required(login_url='/admin/login/')
 def calendar_view(request):
   today = timezone.localdate()
   current_month = int(request.GET.get('month', today.month))
@@ -206,6 +209,7 @@ def calendar_view(request):
   return render(request, 'tracker/calendar.html', context)
 
 
+@login_required(login_url='/admin/login/')
 def add_transaction(request):
   if request.method == 'POST':
     transaction_type = request.POST.get('transaction_type')
@@ -231,6 +235,7 @@ def add_transaction(request):
   return redirect('dashboard')
 
 
+@login_required(login_url='/admin/login/')
 def day_detail(request, year, month, day):
   target_date = date(year, month, day)
   transactions = Transaction.objects.filter(user=request.user, date=target_date)
@@ -241,13 +246,14 @@ def day_detail(request, year, month, day):
   return render(request, 'tracker/day_detail.html', context)
 
 
-# আজকের সব হিসাব ক্লিয়ার করার নতুন ভিউ
+@login_required(login_url='/admin/login/')
 def clear_today_transactions(request):
   today = timezone.localdate()
   Transaction.objects.filter(user=request.user, date=today).delete()
   return redirect('dashboard')
 
 
+@login_required(login_url='/admin/login/')
 def budget_view(request):
   today = date.today()
   current_month = int(request.GET.get('month', today.month))
@@ -333,7 +339,7 @@ def budget_view(request):
   return render(request, 'tracker/budget.html', context)
 
 
-# বাজেট এডিট করার নতুন ভিউ
+@login_required(login_url='/admin/login/')
 def edit_budget(request, pk):
   budget_item = get_object_or_404(Budget, pk=pk, user=request.user)
 
@@ -354,5 +360,6 @@ def edit_budget(request, pk):
   return render(request, 'tracker/edit_budget.html', context)
 
 
+@login_required(login_url='/admin/login/')
 def settings_view(request):
   return render(request, 'tracker/settings.html')
