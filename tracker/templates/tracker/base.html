@@ -4,14 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Money</title>
+    <title>Money Spy</title>
     
     <!-- PWA Manifest & Theme Color -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <meta name="theme-color" content="#030712">
 
-    <!-- Apple Touch Icon for iOS Safari -->
+    <!-- Apple Touch Icon & Web App Title for iOS Safari -->
     <link rel="apple-touch-icon" href="{% static 'icon.png' %}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Money Spy">
+
+    <!-- Application Name for Android / Other Browsers -->
+    <meta name="application-name" content="Money Spy">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
