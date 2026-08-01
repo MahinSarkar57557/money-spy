@@ -51,6 +51,23 @@
             </label>
         </div>
 
+        <!-- Logout Option -->
+        <form action="{% url 'logout' %}" method="POST" class="w-full">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-gray-50 dark:bg-gray-800 border border-rose-100 dark:border-rose-900/30 rounded-2xl p-4 flex justify-between items-center hover:bg-rose-50/50 dark:hover:bg-rose-900/20 transition cursor-pointer">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="text-xs font-bold text-rose-600 dark:text-rose-400">লগআউট / Log Out</h4>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400">আপনার অ্যাকাউন্ট থেকে বের হয়ে যান</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-xs text-rose-400"></i>
+            </button>
+        </form>
+
     </div>
 
     <!-- App Info & Branding Card -->

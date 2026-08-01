@@ -4,6 +4,7 @@ from decimal import Decimal
 import math
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import logout  # লগআউটের জন্য ইমপোর্ট করা হলো
 from django.contrib import messages
 from django.db import models
 from django.db.models import Sum
@@ -350,7 +351,7 @@ def budget_view(request):
     form = BudgetForm(initial={'month': current_month, 'year': current_year})
 
   all_categories = Category.objects.all()
-  expense_categories = Category.objects.filter(is_income=False) # শুধু Expense ক্যাটাগরি ফিল্টার করা হলো
+  expense_categories = Category.objects.filter(is_income=False)
 
   context = {
       'budget_data': budget_data,
@@ -390,3 +391,11 @@ def edit_budget(request, pk):
 @login_required(login_url='login')
 def settings_view(request):
   return render(request, 'tracker/settings.html')
+
+
+# নতুন লগআউট ভিউ
+@login_required(login_url='login')
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Successfully logged out!")
+    return redirect('login')

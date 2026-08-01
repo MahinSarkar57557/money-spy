@@ -13,4 +13,7 @@ urlpatterns = [
     
     # নতুন অ্যাকাউন্ট তৈরির (Signup) পাথ
     path('signup/', views.signup_view, name='signup'),
+    
+    # লগআউট (Logout) পাথ
+    path('logout/', views.logout_view, name='logout'),
 ]
