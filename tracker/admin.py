@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Category, Transaction
+from .models import Transaction, Budget
 
-admin.site.register(Category)
+# ট্রানজ্যাকশন এবং বাজেট এডমিন প্যানেলে রেজিস্টার করা হলো
 admin.site.register(Transaction)
+admin.site.register(Budget)
