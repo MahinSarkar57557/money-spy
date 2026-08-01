@@ -135,7 +135,7 @@
         <!-- Expense Categories Container (Draggable) -->
         <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
             {% for cat in expense_categories %}
-            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
+            <button type="button" data-id="{{ cat.id }}" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
                 <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
                 <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
             </button>
@@ -145,7 +145,7 @@
         <!-- Income Categories Container (Draggable) -->
         <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6 hidden">
             {% for cat in income_categories %}
-            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
+            <button type="button" data-id="{{ cat.id }}" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
                 <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
                 <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
             </button>
@@ -237,21 +237,47 @@
         document.body.classList.remove('modal-open'); // Background Scroll Unlock
     }
 
-    // Initialize Sortable for Drag and Drop Categories
+    // Initialize Sortable for Drag and Drop Categories with localStorage persistence
     document.addEventListener("DOMContentLoaded", function () {
+        // Load Saved Order for Expense Categories
         const expenseList = document.getElementById('expenseCategoryList');
         if (expenseList) {
+            const savedExpenseOrder = JSON.parse(localStorage.getItem('expense_category_order'));
+            if (savedExpenseOrder) {
+                savedExpenseOrder.forEach(id => {
+                    const item = expenseList.querySelector(`[data-id='${id}']`);
+                    if (item) expenseList.appendChild(item);
+                });
+            }
+
             new Sortable(expenseList, {
                 animation: 150,
                 ghostClass: 'bg-emerald-100',
+                onEnd: function () {
+                    const order = Array.from(expenseList.querySelectorAll('.category-item')).map(item => item.getAttribute('data-id'));
+                    localStorage.setItem('expense_category_order', JSON.stringify(order));
+                }
             });
         }
 
+        // Load Saved Order for Income Categories
         const incomeList = document.getElementById('incomeCategoryList');
         if (incomeList) {
+            const savedIncomeOrder = JSON.parse(localStorage.getItem('income_category_order'));
+            if (savedIncomeOrder) {
+                savedIncomeOrder.forEach(id => {
+                    const item = incomeList.querySelector(`[data-id='${id}']`);
+                    if (item) incomeList.appendChild(item);
+                });
+            }
+
             new Sortable(incomeList, {
                 animation: 150,
                 ghostClass: 'bg-emerald-100',
+                onEnd: function () {
+                    const order = Array.from(incomeList.querySelectorAll('.category-item')).map(item => item.getAttribute('data-id'));
+                    localStorage.setItem('income_category_order', JSON.stringify(order));
+                }
             });
         }
 
