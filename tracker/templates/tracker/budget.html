@@ -10,11 +10,15 @@
                 <i class="fas fa-wallet text-emerald-600 text-base"></i> <span data-translate="budget_title">মাসিক বাজেট প্ল্যানার</span>
             </h2>
         </div>
-        <!-- Month Selector / Display -->
-        <div class="flex items-center gap-1.5 text-xs font-semibold bg-gray-50 dark:bg-gray-800 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200">
-            <i class="fas fa-chevron-left text-[10px] cursor-pointer"></i>
-            <span>{{ month_name }} {{ current_year }}</span>
-            <i class="fas fa-chevron-right text-[10px] cursor-pointer"></i>
+        <!-- Month Selector / Display (Previous & Next Links) -->
+        <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200">
+            <a href="?month={% if current_month == 1 %}12{% else %}{{ current_month|add:'-1' }}{% endif %}&year={% if current_month == 1 %}{{ current_year|add:'-1' }}{% else %}{{ current_year }}{% endif %}" class="text-gray-600 dark:text-gray-300 hover:text-emerald-600 p-1">
+                <i class="fas fa-chevron-left text-[10px] cursor-pointer"></i>
+            </a>
+            <span class="text-xs font-semibold">{{ month_name }} {{ current_year }}</span>
+            <a href="?month={% if current_month == 12 %}1{% else %}{{ current_month|add:'1' }}{% endif %}&year={% if current_month == 12 %}{{ current_year|add:'1' }}{% else %}{{ current_year }}{% endif %}" class="text-gray-600 dark:text-gray-300 hover:text-emerald-600 p-1">
+                <i class="fas fa-chevron-right text-[10px] cursor-pointer"></i>
+            </a>
         </div>
     </div>
 
@@ -91,7 +95,7 @@
         </div>
         {% empty %}
         <div class="text-center py-6 text-gray-400 text-xs">
-            কোনো বাজেট সেট করা হয়নি। উপরে "+ বাজেট সেট করুন" এ ক্লিক করে বাজেট যোগ করুন।
+            কোনো বাজেট সেট করা হয়নি। উপরে "+ বাজেট সেট করুন" এ ক্লিক করে বাজেট যোগ করুন।
         </div>
         {% endfor %}
     </div>
@@ -114,9 +118,10 @@
             <input type="hidden" name="year" value="{{ current_year }}">
 
             <div>
-                <label class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 block mb-1.5" data-translate="select_category_label">Select Category</label>
+                <label class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 block mb-1.5" data-translate="select_category_label">Select Expense Category</label>
+                <!-- শুধুমাত্র Expense ক্যাটাগরিগুলো দেখানোর জন্য expense_categories ব্যবহার করা হয়েছে -->
                 <div class="grid grid-cols-3 gap-2.5 overflow-y-auto max-h-56 p-1">
-                    {% for cat in all_categories %}
+                    {% for cat in expense_categories %}
                     <label class="cursor-pointer">
                         <input type="radio" name="category" value="{{ cat.id }}" required class="peer hidden">
                         <div class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 peer-checked:bg-emerald-50 peer-checked:border-emerald-600 peer-checked:ring-2 peer-checked:ring-emerald-500 border border-gray-200 dark:border-gray-700 rounded-2xl transition text-center gap-1">

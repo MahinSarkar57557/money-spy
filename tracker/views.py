@@ -62,7 +62,7 @@ def dashboard_view(request):
   )
   balance = total_income - total_expense
 
-  # ক্যাটাগরিগুলো আলাদা করার জন্য এবং ফর্মের ফিল্টারিংয়ের সুবিধার্থে
+  # ক্যাটাগরিগুলো আলাদা করার জন্য এবং ফর্মের ফিল্টারিংয়ের সুবিধার্থে
   all_categories = Category.objects.all()
   expense_categories = Category.objects.filter(is_income=False)
   income_categories = Category.objects.filter(is_income=True)
@@ -277,8 +277,12 @@ def clear_today_transactions(request):
 @login_required(login_url='login')
 def budget_view(request):
   today = date.today()
-  current_month = int(request.GET.get('month', today.month))
-  current_year = int(request.GET.get('year', today.year))
+  try:
+    current_month = int(request.GET.get('month', today.month))
+    current_year = int(request.GET.get('year', today.year))
+  except ValueError:
+    current_month = today.month
+    current_year = today.year
 
   budgets = Budget.objects.filter(
       user=request.user, month=current_month, year=current_year
@@ -346,6 +350,7 @@ def budget_view(request):
     form = BudgetForm(initial={'month': current_month, 'year': current_year})
 
   all_categories = Category.objects.all()
+  expense_categories = Category.objects.filter(is_income=False) # শুধু Expense ক্যাটাগরি ফিল্টার করা হলো
 
   context = {
       'budget_data': budget_data,
@@ -356,6 +361,7 @@ def budget_view(request):
       'total_spent_amount': total_spent_amount,
       'month_name': calendar.month_name[current_month],
       'all_categories': all_categories,
+      'expense_categories': expense_categories,
   }
   return render(request, 'tracker/budget.html', context)
 
