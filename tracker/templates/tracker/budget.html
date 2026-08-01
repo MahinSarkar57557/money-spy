@@ -51,53 +51,57 @@
         </div>
     </div>
 
-    <!-- Budget List Section -->
-    <div class="flex flex-col gap-3">
-        {% for item in budget_data %}
-        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex flex-col gap-2.5 transition-colors">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">
-                        <i class="{{ item.budget.category.icon|default:'fas fa-wallet' }}"></i>
+    <!-- Budget List Section (Scrollable to bottom) -->
+    <div class="flex flex-col gap-3 overflow-y-auto max-h-[42vh] pr-1 pb-4">
+        <p class="text-[10px] font-bold text-gray-400 px-1">ক্যাটাগরিগুলো ড্র্যাগ করে সাজাতে পারেন:</p>
+        
+        <div id="budgetCategoryList" class="flex flex-col gap-3">
+            {% for item in budget_data %}
+            <div data-id="{{ item.budget.category.name }}" class="budget-item bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex flex-col gap-2.5 transition-colors select-none cursor-grab active:cursor-grabbing">
+                <div class="flex justify-between items-center pointer-events-none">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">
+                            <i class="{{ item.budget.category.icon|default:'fas fa-wallet' }}"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                {{ item.budget.category.name }}
+                                <!-- ছোট এডিট বাটন (পেন্সিল আইকন) -->
+                                <a href="{% url 'edit_budget' item.budget.id %}" class="text-gray-400 hover:text-emerald-600 text-[11px] transition cursor-pointer pointer-events-auto" title="Edit Budget">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                            </h4>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5"><span data-translate="label_budget">বাজেট</span>: ৳{{ item.budget.amount|floatformat:0 }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                            {{ item.budget.category.name }}
-                            <!-- ছোট এডিট বাটন (পেন্সিল আইকন) -->
-                            <a href="{% url 'edit_budget' item.budget.id %}" class="text-gray-400 hover:text-emerald-600 text-[11px] transition cursor-pointer" title="Edit Budget">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                        </h4>
-                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5"><span data-translate="label_budget">বাজেট</span>: ৳{{ item.budget.amount|floatformat:0 }}</p>
+                    <div class="text-right">
+                        <h4 class="text-xs font-bold text-gray-800 dark:text-white">৳{{ item.spent|floatformat:0 }}</h4>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5"><span data-translate="label_remaining">বাকি</span>: ৳{{ item.remaining|floatformat:0 }}</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <h4 class="text-xs font-bold text-gray-800 dark:text-white">৳{{ item.spent|floatformat:0 }}</h4>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5"><span data-translate="label_remaining">বাকি</span>: ৳{{ item.remaining|floatformat:0 }}</p>
-                </div>
-            </div>
 
-            <!-- Progress Bar with Dynamic Color based on rem_percentage -->
-            <div class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden mt-1">
-                <div class="h-full rounded-full 
-                    {% if item.remaining <= 0 %}
-                        bg-rose-500
-                    {% elif item.rem_percentage >= 70 %}
-                        bg-emerald-500
-                    {% elif item.rem_percentage >= 30 %}
-                        bg-amber-500
-                    {% else %}
-                        bg-rose-500
-                    {% endif %}" 
-                    style="width: {{ item.percentage }}%;">
+                <!-- Progress Bar with Dynamic Color based on rem_percentage -->
+                <div class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden mt-1 pointer-events-none">
+                    <div class="h-full rounded-full 
+                        {% if item.remaining <= 0 %}
+                            bg-rose-500
+                        {% elif item.rem_percentage >= 70 %}
+                            bg-emerald-500
+                        {% elif item.rem_percentage >= 30 %}
+                            bg-amber-500
+                        {% else %}
+                            bg-rose-500
+                        {% endif %}" 
+                        style="width: {{ item.percentage }}%;">
+                    </div>
                 </div>
             </div>
+            {% empty %}
+            <div class="text-center py-6 text-gray-400 text-xs">
+                কোনো বাজেট সেট করা হয়নি। উপরে "+ বাজেট সেট করুন" এ ক্লিক করে বাজেট যোগ করুন।
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="text-center py-6 text-gray-400 text-xs">
-            কোনো বাজেট সেট করা হয়নি। উপরে "+ বাজেট সেট করুন" এ ক্লিক করে বাজেট যোগ করুন।
-        </div>
-        {% endfor %}
     </div>
 
 </div>
@@ -119,7 +123,7 @@
 
             <div>
                 <label class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 block mb-1.5" data-translate="select_category_label">Select Expense Category</label>
-                <!-- শুধুমাত্র Expense ক্যাটাগরিগুলো দেখানোর জন্য expense_categories ব্যবহার করা হয়েছে -->
+                <!-- শুধুমাত্র Expense ক্যাটাগরিগুলো দেখানোর জন্য expense_categories ব্যবহার করা হয়েছে -->
                 <div class="grid grid-cols-3 gap-2.5 overflow-y-auto max-h-56 p-1">
                     {% for cat in expense_categories %}
                     <label class="cursor-pointer">
@@ -146,15 +150,46 @@
     </div>
 </div>
 
+<!-- Sortable.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
 <script>
     function openBudgetModal() {
+        document.body.classList.add('overflow-hidden'); // Background fixed/locked
         document.getElementById('budgetModal').classList.remove('hidden');
         document.getElementById('budgetModal').classList.add('flex');
     }
 
     function closeBudgetModal() {
+        document.body.classList.remove('overflow-hidden'); // Background scroll restored
         document.getElementById('budgetModal').classList.remove('flex');
         document.getElementById('budgetModal').classList.add('hidden');
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const budgetList = document.getElementById('budgetCategoryList');
+        if (budgetList) {
+            const savedBudgetOrder = JSON.parse(localStorage.getItem('budget_category_order'));
+            if (savedBudgetOrder) {
+                savedBudgetOrder.forEach(id => {
+                    const item = budgetList.querySelector(`[data-id='${id}']`);
+                    if (item) budgetList.appendChild(item);
+                });
+            }
+
+            // Sortable configuration with 200ms touch delay for mobile drag & drop
+            new Sortable(budgetList, {
+                animation: 150,
+                delay: 200,
+                delayOnTouchOnly: true,
+                touchStartThreshold: 3,
+                ghostClass: 'bg-emerald-100',
+                onEnd: function () {
+                    const order = Array.from(budgetList.querySelectorAll('.budget-item')).map(item => item.getAttribute('data-id'));
+                    localStorage.setItem('budget_category_order', JSON.stringify(order));
+                }
+            });
+        }
+    });
 </script>
 {% endblock %}
