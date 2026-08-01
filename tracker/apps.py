@@ -6,12 +6,11 @@ class TrackerConfig(AppConfig):
     name = 'tracker'
 
     def ready(self):
-        # সার্ভার স্টার্ট হওয়ার সময় ক্যাটাগরিগুলো অটো ডাটাবেজে যুক্ত করার জন্য
         try:
             from tracker.models import Category
             
             all_categories = [
-                # Expense Categories (is_income = False)
+                # --- Expense Categories (is_income = False) ---
                 {"name": "Food & Snacks", "icon": "fas fa-utensils", "color": "#FF5733", "is_income": False},
                 {"name": "Transport & Commute", "icon": "fas fa-bus", "color": "#33FF57", "is_income": False},
                 {"name": "Rent & Mess Bill", "icon": "fas fa-home", "color": "#3357FF", "is_income": False},
@@ -23,7 +22,6 @@ class TrackerConfig(AppConfig):
                 {"name": "Shopping", "icon": "fas fa-shopping-bag", "color": "#FF3383", "is_income": False},
                 {"name": "Hair Cut & Grooming", "icon": "fas fa-cut", "color": "#33FF83", "is_income": False},
                 {"name": "Health & Medical", "icon": "fas fa-medkit", "color": "#FF3333", "is_income": False},
-                {"name": "Gifts & Donation", "icon": "fas fa-gift", "color": "#3383FF", "is_income": False},
                 {"name": "Tea & Coffee", "icon": "fas fa-coffee", "color": "#D4AC0D", "is_income": False},
                 {"name": "Laundry & Iron", "icon": "fas fa-tshirt", "color": "#5D6D7E", "is_income": False},
                 {"name": "Entertainment & Movies", "icon": "fas fa-film", "color": "#AF7AC5", "is_income": False},
@@ -32,9 +30,19 @@ class TrackerConfig(AppConfig):
                 {"name": "Debt Repayment", "icon": "fas fa-hand-holding-usd", "color": "#5499C7", "is_income": False},
                 {"name": "Savings & Deposit", "icon": "fas fa-piggy-bank", "color": "#52BE80", "is_income": False},
                 {"name": "Emergency Fund", "icon": "fas fa-shield-alt", "color": "#F4D03F", "is_income": False},
+                
+                # Newly Added Expense Categories
+                {"name": "Clothing", "icon": "fas fa-tshirt", "color": "#E91E63", "is_income": False},
+                {"name": "Online Payment", "icon": "fas fa-credit-card", "color": "#00BCD4", "is_income": False},
+                {"name": "Course", "icon": "fas fa-laptop", "color": "#673AB7", "is_income": False},
+                {"name": "App Subscription", "icon": "fas fa-mobile", "color": "#3F51B5", "is_income": False},
+                {"name": "Repairing", "icon": "fas fa-tools", "color": "#795548", "is_income": False},
+                {"name": "Gift", "icon": "fas fa-gift", "color": "#E91E63", "is_income": False},
+                {"name": "Donation", "icon": "fas fa-hand-holding-heart", "color": "#009688", "is_income": False},
+                
                 {"name": "Other Expenses", "icon": "fas fa-ellipsis-h", "color": "#95A5A6", "is_income": False},
 
-                # Income Categories (is_income = True)
+                # --- Income Categories (is_income = True) ---
                 {"name": "Freelancing", "icon": "fas fa-laptop-code", "color": "#3498DB", "is_income": True},
                 {"name": "Job Salary", "icon": "fas fa-briefcase", "color": "#2980B9", "is_income": True},
                 {"name": "Scholarship", "icon": "fas fa-award", "color": "#27AE60", "is_income": True},
@@ -49,13 +57,11 @@ class TrackerConfig(AppConfig):
             ]
 
             for item in all_categories:
-                Category.objects.get_or_create(
-                    name=item["name"],
-                    defaults={
-                        "icon": item["icon"],
-                        "color": item["color"],
-                        "is_income": item["is_income"]
-                    }
-                )
+                # নাম দিয়ে অবজেক্ট চেক করে আপডেট বা ক্রিয়েট করবে, যাতে কালার ও আইকন পারফেক্ট থাকে
+                obj, created = Category.objects.get_or_create(name=item["name"])
+                obj.icon = item["icon"]
+                obj.color = item["color"]
+                obj.is_income = item["is_income"]
+                obj.save()
         except Exception:
             pass
