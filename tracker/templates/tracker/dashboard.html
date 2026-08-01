@@ -132,7 +132,7 @@
         </div>
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0" data-translate="select_category_prompt">একটি ক্যাটাগরি সিলেক্ট করুন</p>
         
-        <!-- Expense Categories Container (Draggable) -->
+        <!-- Expense Categories Container (Draggable with 2s delay) -->
         <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
             {% for cat in expense_categories %}
             <button type="button" data-id="{{ cat.id }}" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
@@ -142,7 +142,7 @@
             {% endfor %}
         </div>
 
-        <!-- Income Categories Container (Draggable) -->
+        <!-- Income Categories Container (Draggable with 2s delay) -->
         <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6 hidden">
             {% for cat in income_categories %}
             <button type="button" data-id="{{ cat.id }}" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
@@ -237,7 +237,7 @@
         document.body.classList.remove('modal-open'); // Background Scroll Unlock
     }
 
-    // Initialize Sortable for Drag and Drop Categories with localStorage persistence
+    // Initialize Sortable for Drag and Drop Categories with 2-second Long Press Delay
     document.addEventListener("DOMContentLoaded", function () {
         // Load Saved Order for Expense Categories
         const expenseList = document.getElementById('expenseCategoryList');
@@ -252,6 +252,9 @@
 
             new Sortable(expenseList, {
                 animation: 150,
+                delay: 2000, // ২ সেকেন্ড (2000ms) চেপে ধরে রাখলে ড্রাগ শুরু হবে
+                delayOnTouchOnly: true, // শুধু টাচ ডিভাইসে ডেল কাজ করবে
+                touchStartThreshold: 5,
                 ghostClass: 'bg-emerald-100',
                 onEnd: function () {
                     const order = Array.from(expenseList.querySelectorAll('.category-item')).map(item => item.getAttribute('data-id'));
@@ -273,6 +276,9 @@
 
             new Sortable(incomeList, {
                 animation: 150,
+                delay: 2000, // ২ সেকেন্ড (2000ms) চেপে ধরে রাখলে ড্রাগ শুরু হবে
+                delayOnTouchOnly: true,
+                touchStartThreshold: 5,
                 ghostClass: 'bg-emerald-100',
                 onEnd: function () {
                     const order = Array.from(incomeList.querySelectorAll('.category-item')).map(item => item.getAttribute('data-id'));
