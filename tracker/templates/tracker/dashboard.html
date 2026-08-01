@@ -127,17 +127,27 @@
 <div id="transactionModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center transition-opacity">
     <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl h-[75vh] flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-800 pb-2 flex-shrink-0">
-            <h3 id="modalTitle" data-translate-bn="নতুন খরচ যোগ করুন" data-translate-en="Add New Expense" class="text-sm font-bold text-gray-800 dark:text-gray-100">নতুন খরচ যোগ করুন</h3>
+            <h3 id="modalTitle" class="text-sm font-bold text-gray-800 dark:text-gray-100">নতুন খরচ যোগ করুন</h3>
             <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg font-bold cursor-pointer">&times;</button>
         </div>
-        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0" data-translate="select_category_prompt">একটি ক্যাটাগরি সিলেক্ট করুন</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0">একটি ক্যাটাগরি সিলেক্ট করুন</p>
         
-        <!-- Fixed Categories Container -->
+        <!-- Expense Categories Container (29 Items) -->
         <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
-            {% for cat in all_categories %}
-            <button type="button" data-id="{{ cat }}" onclick="selectCategory('{{ cat }}', '{{ cat }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
-                <i class="fas fa-tag text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
-                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat }}</span>
+            {% for cat in expense_categories %}
+            <button type="button" data-id="{{ cat.name }}" onclick="selectCategory('{{ cat.name }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
+                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
+                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
+            </button>
+            {% endfor %}
+        </div>
+
+        <!-- Income Categories Container (7 New Items) -->
+        <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6 hidden">
+            {% for cat in income_categories %}
+            <button type="button" data-id="{{ cat.name }}" onclick="selectCategory('{{ cat.name }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
+                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
+                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
             </button>
             {% endfor %}
         </div>
@@ -183,13 +193,18 @@
         currentTxType = type;
         document.getElementById('inputTxType').value = type;
         
-        const currentLang = localStorage.getItem('language') || 'bn';
         const titleEl = document.getElementById('modalTitle');
+        const expenseList = document.getElementById('expenseCategoryList');
+        const incomeList = document.getElementById('incomeCategoryList');
 
         if (type === 'income') {
-            titleEl.innerText = currentLang === 'en' ? 'Add New Income' : 'নতুন আয় যোগ করুন';
+            titleEl.innerText = 'নতুন আয় যোগ করুন';
+            incomeList.classList.remove('hidden');
+            expenseList.classList.add('hidden');
         } else {
-            titleEl.innerText = currentLang === 'en' ? 'Add New Expense' : 'নতুন খরচ যোগ করুন';
+            titleEl.innerText = 'নতুন খরচ যোগ করুন';
+            expenseList.classList.remove('hidden');
+            incomeList.classList.add('hidden');
         }
         
         document.body.classList.add('modal-open');

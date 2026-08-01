@@ -63,11 +63,53 @@ def dashboard_view(request):
     )
     balance = total_income - total_expense
 
-    # ফিক্সড ক্যাটাগরি লিস্ট থেকে নামগুলো এক্সট্রাক্ট করা
-    all_categories = [cat[0] for cat in CATEGORY_CHOICES]
+    # খরচের ২৯টি ক্যাটাগরি এবং সেগুলোর আইকন
+    expense_categories = [
+        {"name": "Tuition & Fees", "icon": "fas fa-graduation-cap"},
+        {"name": "Books & Notes", "icon": "fas fa-book"},
+        {"name": "Stationery", "icon": "fas fa-pen"},
+        {"name": "Courses & Training", "icon": "fas fa-laptop-code"},
+        {"name": "Mess / Hall Bill", "icon": "fas fa-utensils"},
+        {"name": "Restaurants & Fast Food", "icon": "fas fa-hamburger"},
+        {"name": "Tea & Snacks", "icon": "fas fa-coffee"},
+        {"name": "Groceries", "icon": "fas fa-shopping-basket"},
+        {"name": "Bus / Local Transport", "icon": "fas fa-bus"},
+        {"name": "Rickshaw & CNG", "icon": "fas fa-shuttle-van"},
+        {"name": "Bike Fuel / Maintenance", "icon": "fas fa-motorcycle"},
+        {"name": "Tour & Travel", "icon": "fas fa-plane"},
+        {"name": "Rent / Room Rent", "icon": "fas fa-home"},
+        {"name": "Electricity & Gas", "icon": "fas fa-bolt"},
+        {"name": "Internet & WiFi", "icon": "fas fa-wifi"},
+        {"name": "Mobile Recharge", "icon": "fas fa-mobile-alt"},
+        {"name": "bKash / Nagad", "icon": "fas fa-wallet"},
+        {"name": "Clothing & Tailoring", "icon": "fas fa-tshirt"},
+        {"name": "Personal Care", "icon": "fas fa-cut"},
+        {"name": "Medical & Pharmacy", "icon": "fas fa-medkit"},
+        {"name": "Fitness & Gym", "icon": "fas fa-dumbbell"},
+        {"name": "Entertainment & Movies", "icon": "fas fa-film"},
+        {"name": "Gadgets & Electronics", "icon": "fas fa-laptop"},
+        {"name": "Home Maintenance", "icon": "fas fa-tools"},
+        {"name": "Charity & Donation", "icon": "fas fa-hand-holding-heart"},
+        {"name": "Family & Friends", "icon": "fas fa-users"},
+        {"name": "Pet Care", "icon": "fas fa-paw"},
+        {"name": "Miscellaneous", "icon": "fas fa-box"},
+        {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
+    ]
+
+    # আয়ের নতুন ক্যাটাগরিগুলো এবং আইকন
+    income_categories = [
+        {"name": "Job", "icon": "fas fa-briefcase"},
+        {"name": "Business", "icon": "fas fa-store"},
+        {"name": "Freelancing", "icon": "fas fa-laptop-code"},
+        {"name": "Tuition", "icon": "fas fa-chalkboard-teacher"},
+        {"name": "Gift", "icon": "fas fa-gift"},
+        {"name": "Money Back", "icon": "fas fa-undo-alt"},
+        {"name": "Pocket Money", "icon": "fas fa-hand-holding-usd"},
+    ]
 
     active_categories = []
-    for cat_name in all_categories:
+    for cat in expense_categories:
+        cat_name = cat["name"]
         cat_total = sum(
             t.amount
             for t in transactions.filter(
@@ -141,7 +183,8 @@ def dashboard_view(request):
         'total_expense': total_expense,
         'balance': balance,
         'categories': processed_categories,
-        'all_categories': all_categories,
+        'expense_categories': expense_categories,
+        'income_categories': income_categories,
         'gradient_css': gradient_css,
         'today': today,
     }
