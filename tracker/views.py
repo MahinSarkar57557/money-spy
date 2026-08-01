@@ -62,7 +62,10 @@ def dashboard_view(request):
   )
   balance = total_income - total_expense
 
+  # ক্যাটাগরিগুলো আলাদা করার জন্য এবং ফর্মের ফিল্টারিংয়ের সুবিধার্থে
   all_categories = Category.objects.all()
+  expense_categories = Category.objects.filter(is_income=False)
+  income_categories = Category.objects.filter(is_income=True)
 
   active_categories = []
   for cat in all_categories:
@@ -144,6 +147,8 @@ def dashboard_view(request):
       'balance': balance,
       'categories': processed_categories,
       'all_categories': all_categories,
+      'expense_categories': expense_categories,
+      'income_categories': income_categories,
       'gradient_css': gradient_css,
       'today': today,
   }

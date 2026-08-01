@@ -10,7 +10,7 @@ class TrackerConfig(AppConfig):
             from tracker.models import Category
             
             all_categories = [
-                # --- Expense Categories (is_income = False) [গুরুত্বপূর্ণগুলো উপরে] ---
+                # --- Expense Categories (is_income = False) [গুরুত্বপূর্ণগুলো একদম উপরে থাকবে] ---
                 {"name": "Food & Snacks", "icon": "fas fa-utensils", "color": "#FF5733", "is_income": False},
                 {"name": "Rent & Mess Bill", "icon": "fas fa-home", "color": "#3357FF", "is_income": False},
                 {"name": "Transport & Commute", "icon": "fas fa-bus", "color": "#33FF57", "is_income": False},
@@ -19,7 +19,7 @@ class TrackerConfig(AppConfig):
                 {"name": "Clothing", "icon": "fas fa-tshirt", "color": "#E91E63", "is_income": False},
                 {"name": "Shopping", "icon": "fas fa-shopping-bag", "color": "#FF3383", "is_income": False},
                 
-                # --- বাকী এক্সপেন্স ক্যাটাগরিগুলো ---
+                # --- অন্যান্য এক্সপেন্স ক্যাটাগরি ---
                 {"name": "Utilities (Gas/Electricity)", "icon": "fas fa-bolt", "color": "#F3FF33", "is_income": False},
                 {"name": "Internet & Mobile", "icon": "fas fa-wifi", "color": "#FF33F3", "is_income": False},
                 {"name": "Tuition & Coaching", "icon": "fas fa-chalkboard-teacher", "color": "#8333FF", "is_income": False},
@@ -41,7 +41,7 @@ class TrackerConfig(AppConfig):
                 {"name": "Donation", "icon": "fas fa-hand-holding-heart", "color": "#009688", "is_income": False},
                 {"name": "Other Expenses", "icon": "fas fa-ellipsis-h", "color": "#95A5A6", "is_income": False},
 
-                # --- Income Categories (is_income = True) [এগুলো শুধু ইনকাম পেজে থাকবে] ---
+                # --- Income Categories (is_income = True) [এগুলো শুধুমাত্র ইনকাম পেজে দেখাবে] ---
                 {"name": "Job Salary", "icon": "fas fa-briefcase", "color": "#2980B9", "is_income": True},
                 {"name": "Scholarship", "icon": "fas fa-award", "color": "#27AE60", "is_income": True},
                 {"name": "Freelancing", "icon": "fas fa-laptop-code", "color": "#3498DB", "is_income": True},
