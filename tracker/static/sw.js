@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quantum-money-v1';
+const CACHE_NAME = 'money-spy-v1';
 const urlsToCache = [
     '/',
     '/static/icon.png'
@@ -8,7 +8,7 @@ const urlsToCache = [
 self.addEventListener('install', (e) => {
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('[Service Worker] Caching app shell');
+            console.log('[Service Worker] Caching all: app shell and content');
             return cache.addAll(urlsToCache);
         })
     );
