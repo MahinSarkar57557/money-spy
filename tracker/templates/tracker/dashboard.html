@@ -21,7 +21,7 @@
     <div class="flex justify-between items-center mb-3 relative z-10">
         <div class="flex items-center space-x-1 bg-gray-200 dark:bg-gray-800 px-3 py-1.5 rounded-full shadow-sm text-xs font-bold text-gray-700 dark:text-gray-300">
             <i class="fas fa-filter text-[10px] text-gray-500"></i>
-            <span data-translate="all_accounts">All Accounts</span>
+            <span data-en="All Accounts" data-bn="সকল অ্যাকাউন্ট">All Accounts</span>
         </div>
         
         <div class="flex items-center space-x-2 bg-gray-200 dark:bg-gray-800 px-3 py-1.5 rounded-full shadow-sm">
@@ -35,9 +35,9 @@
         </div>
         
         <!-- Clear Today Data Button -->
-        <form action="{% url 'clear_today_transactions' %}" method="POST" onsubmit="return confirm('আজকের দিনের সমস্ত হিসাব কি ডিলিট করতে চান?');">
+        <form action="{% url 'clear_today_transactions' %}" method="POST" onsubmit="return confirm(localStorage.getItem('app_language') === 'bn' ? 'আজকের দিনের সমস্ত হিসাব কি ডিলিট করতে চান?' : 'Do you want to delete all today\'s transactions?');">
             {% csrf_token %}
-            <button type="submit" data-translate-title="clear_today_tooltip" title="আজকের হিসাব মুছুন" class="bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-200 p-2 rounded-full shadow-sm transition text-xs flex items-center justify-center cursor-pointer">
+            <button type="submit" title="আজকের হিসাব মুছুন" class="bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-200 p-2 rounded-full shadow-sm transition text-xs flex items-center justify-center cursor-pointer">
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>
@@ -49,8 +49,8 @@
         
         <!-- Main Balance -->
         <div class="mb-4">
-            <p class="text-xs font-semibold text-blue-100 uppercase tracking-wider" data-translate="balance">Balance</p>
-            <h2 class="text-2xl font-black tracking-tight mt-1">{{ balance|floatformat:0 }} <span data-translate="currency_taka">Taka</span></h2>
+            <p class="text-xs font-semibold text-blue-100 uppercase tracking-wider" data-en="Balance" data-bn="ব্যালেন্স">Balance</p>
+            <h2 class="text-2xl font-black tracking-tight mt-1">{{ balance|floatformat:0 }} <span data-en="Taka" data-bn="টাকা">Taka</span></h2>
         </div>
 
         <!-- Divider Line -->
@@ -59,12 +59,12 @@
         <!-- Income & Expense Row inside Card -->
         <div class="grid grid-cols-2 gap-4">
             <div>
-                <p class="text-[11px] font-semibold text-blue-200" data-translate="income">Income</p>
-                <p class="text-base font-extrabold text-emerald-300 mt-0.5">{{ total_income|floatformat:0 }} <span data-translate="currency_taka">Taka</span></p>
+                <p class="text-[11px] font-semibold text-blue-200" data-en="Income" data-bn="আয়">Income</p>
+                <p class="text-base font-extrabold text-emerald-300 mt-0.5">{{ total_income|floatformat:0 }} <span data-en="Taka" data-bn="টাকা">Taka</span></p>
             </div>
             <div>
-                <p class="text-[11px] font-semibold text-blue-200" data-translate="expense">Expense</p>
-                <p class="text-base font-extrabold text-rose-300 mt-0.5">{{ total_expense|floatformat:0 }} <span data-translate="currency_taka">Taka</span></p>
+                <p class="text-[11px] font-semibold text-blue-200" data-en="Expense" data-bn="খরচ">Expense</p>
+                <p class="text-base font-extrabold text-rose-300 mt-0.5">{{ total_expense|floatformat:0 }} <span data-en="Taka" data-bn="টাকা">Taka</span></p>
             </div>
         </div>
     </div>
@@ -80,9 +80,9 @@
 
             <!-- Inner White Circle with Centered Total Expense Text -->
             <div class="absolute w-[110px] h-[110px] bg-white dark:bg-gray-900 rounded-full shadow-md flex flex-col items-center justify-center text-center z-10 border-4 border-gray-50 dark:border-gray-800 p-1">
-                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-tight" data-translate="total_expense_label">TOTAL EXPENSE</span>
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-tight" data-en="TOTAL EXPENSE" data-bn="মোট খরচ">TOTAL EXPENSE</span>
                 <span class="text-xs font-extrabold text-rose-600 dark:text-rose-400 mt-0.5 leading-tight">
-                    {{ total_expense|floatformat:0 }} <span data-translate="currency_taka">Taka</span>
+                    {{ total_expense|floatformat:0 }} <span data-en="Taka" data-bn="টাকা">Taka</span>
                 </span>
             </div>
 
@@ -124,13 +124,13 @@
 </div>
 
 <!-- TRANSACTION CATEGORY SELECTION MODAL -->
-<div id="transactionModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center transition-opacity">
+<div id="transactionModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center transition-opacity p-2 sm:p-4">
     <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl h-[75vh] flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-800 pb-2 flex-shrink-0">
-            <h3 id="modalTitle" class="text-sm font-bold text-gray-800 dark:text-gray-100">নতুন খরচ যোগ করুন</h3>
+            <h3 id="modalTitle" class="text-sm font-bold text-gray-800 dark:text-gray-100" data-en="Select Category" data-bn="ক্যাটাগরি সিলেক্ট করুন">নতুন খরচ যোগ করুন</h3>
             <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg font-bold cursor-pointer">&times;</button>
         </div>
-        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0">একটি ক্যাটাগরি সিলেক্ট করুন</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0" data-en="Select a category" data-bn="একটি ক্যাটাগরি সিলেক্ট করুন">একটি ক্যাটাগরি সিলেক্ট করুন</p>
         
         <!-- Expense Categories Container (29 Items) -->
         <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
@@ -154,9 +154,9 @@
     </div>
 </div>
 
-<!-- AMOUNT INPUT SUB-MODAL (Date and Amount boxes strictly matched) -->
-<div id="amountModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center px-4">
-    <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-5 shadow-2xl box-border">
+<!-- AMOUNT INPUT SUB-MODAL (Fixed layout for Mobile, matching width and fully translated based on Settings) -->
+<div id="amountModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-900 w-full max-w-sm rounded-3xl p-5 shadow-2xl box-border max-h-[90vh] overflow-y-auto">
         <form method="POST" action="{% url 'add_transaction' %}">
             {% csrf_token %}
             <input type="hidden" name="transaction_type" id="inputTxType" value="expense">
@@ -164,24 +164,24 @@
             <h3 id="selectedCategoryName" class="text-sm font-bold text-emerald-600 dark:text-emerald-400 text-center mb-3 truncate">Category</h3>
             
             <div class="mb-3">
-                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="amount_label">পরিমাণ (Amount Taka)</label>
-                <input type="number" step="1" name="amount" required placeholder="0" class="w-full box-border px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
+                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-en="Amount (Taka)" data-bn="পরিমাণ (টাকা)">Amount (Taka)</label>
+                <input type="number" step="1" name="amount" required placeholder="0" class="w-full box-border px-3 py-2.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
             
             <div class="mb-3">
-                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="date_label">তারিখ (Date)</label>
-                <!-- Exact matching width, box-sizing, and padding style as amount field -->
-                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full box-border px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
+                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-en="Date" data-bn="তারিখ">Date</label>
+                <!-- Fixed Date input box with matching styles -->
+                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full box-border px-3 py-2.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
             
             <div class="mb-4">
-                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="note_label">নোট (Description - Optional)</label>
-                <input type="text" name="description" data-translate-placeholder="note_placeholder" placeholder="কী বাবদ খরচ/আয়?" class="w-full box-border px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500">
+                <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-en="Description (Optional)" data-bn="নোট (ঐচ্ছিক)">Description (Optional)</label>
+                <input type="text" name="description" placeholder="What is this for?" data-placeholder-en="What is this for?" data-placeholder-bn="কী বাবদ খরচ/আয়?" class="w-full box-border px-3 py-2.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500">
             </div>
             
             <div class="flex space-x-2">
-                <button type="button" onclick="closeAmountModal()" class="w-1/2 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition cursor-pointer" data-translate="cancel_btn">বাতিল</button>
-                <button type="submit" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer" data-translate="save_btn">সেভ করুন</button>
+                <button type="button" onclick="closeAmountModal()" class="w-1/2 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition cursor-pointer" data-en="Cancel" data-bn="বাতিল">Cancel</button>
+                <button type="submit" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer" data-en="Save" data-bn="সেভ করুন">Save</button>
             </div>
         </form>
     </div>
@@ -194,6 +194,28 @@
     let currentTxType = 'expense';
     let selectedCatNameText = "";
 
+    // Language switcher logic based on local storage setting ('bn' or 'en')
+    function applyAppLanguage() {
+        const lang = localStorage.getItem('app_language') || 'bn'; // Default to Bengali if not set
+        
+        // Translate elements with data-en and data-bn
+        document.querySelectorAll('[data-bn]').forEach(el => {
+            if (lang === 'bn') {
+                if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-bn')) {
+                    el.placeholder = el.getAttribute('data-placeholder-bn');
+                } else {
+                    el.innerText = el.getAttribute('data-bn');
+                }
+            } else {
+                if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-en')) {
+                    el.placeholder = el.getAttribute('data-placeholder-en');
+                } else {
+                    el.innerText = el.getAttribute('data-en');
+                }
+            }
+        });
+    }
+
     function openModal(type) {
         currentTxType = type;
         document.getElementById('inputTxType').value = type;
@@ -201,13 +223,14 @@
         const titleEl = document.getElementById('modalTitle');
         const expenseList = document.getElementById('expenseCategoryList');
         const incomeList = document.getElementById('incomeCategoryList');
+        const lang = localStorage.getItem('app_language') || 'bn';
 
         if (type === 'income') {
-            titleEl.innerText = 'নতুন আয় যোগ করুন';
+            titleEl.innerText = (lang === 'bn') ? 'নতুন আয় যোগ করুন' : 'Add New Income';
             incomeList.classList.remove('hidden');
             expenseList.classList.add('hidden');
         } else {
-            titleEl.innerText = 'নতুন খরচ যোগ করুন';
+            titleEl.innerText = (lang === 'bn') ? 'নতুন খরচ যোগ করুন' : 'Add New Expense';
             expenseList.classList.remove('hidden');
             incomeList.classList.add('hidden');
         }
@@ -235,6 +258,8 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
+        applyAppLanguage();
+
         const expenseList = document.getElementById('expenseCategoryList');
         if (expenseList) {
             const savedExpenseOrder = JSON.parse(localStorage.getItem('expense_category_order'));
