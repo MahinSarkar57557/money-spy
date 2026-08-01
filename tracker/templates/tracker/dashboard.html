@@ -132,22 +132,22 @@
         </div>
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0" data-translate="select_category_prompt">একটি ক্যাটাগরি সিলেক্ট করুন</p>
         
-        <!-- Expense Categories Container -->
+        <!-- Expense Categories Container (Draggable) -->
         <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
             {% for cat in expense_categories %}
-            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer">
-                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5"></i>
-                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full">{{ cat.name }}</span>
+            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
+                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
+                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
             </button>
             {% endfor %}
         </div>
 
-        <!-- Income Categories Container -->
+        <!-- Income Categories Container (Draggable) -->
         <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6 hidden">
             {% for cat in income_categories %}
-            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer">
-                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5"></i>
-                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full">{{ cat.name }}</span>
+            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
+                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
+                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
             </button>
             {% endfor %}
         </div>
@@ -181,6 +181,9 @@
         </form>
     </div>
 </div>
+
+<!-- Sortable.js CDN for Drag & Drop Category Reordering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <script>
     let currentTxType = 'expense';
@@ -234,6 +237,53 @@
         document.body.classList.remove('modal-open'); // Background Scroll Unlock
     }
 
+    // Initialize Sortable for Drag and Drop Categories
+    document.addEventListener("DOMContentLoaded", function () {
+        const expenseList = document.getElementById('expenseCategoryList');
+        if (expenseList) {
+            new Sortable(expenseList, {
+                animation: 150,
+                ghostClass: 'bg-emerald-100',
+            });
+        }
+
+        const incomeList = document.getElementById('incomeCategoryList');
+        if (incomeList) {
+            new Sortable(incomeList, {
+                animation: 150,
+                ghostClass: 'bg-emerald-100',
+            });
+        }
+
+        const expenseForm = document.querySelector("#amountModal form");
+        if (expenseForm) {
+            expenseForm.addEventListener("submit", function() {
+                document.body.classList.remove('modal-open');
+                const txType = document.getElementById('inputTxType').value;
+                
+                if (txType === 'expense') {
+                    const amountInput = expenseForm.querySelector("input[name='amount']").value;
+                    const expenseAmount = parseFloat(amountInput) || 0;
+
+                    if (expenseAmount > 0 && selectedCatNameText) {
+                        let savedBudgets = JSON.parse(localStorage.getItem('user_budgets')) || [];
+                        
+                        savedBudgets = savedBudgets.map(b => {
+                            if (b.name.toLowerCase().trim() === selectedCatNameText.toLowerCase().trim() || 
+                                b.name.toLowerCase().includes(selectedCatNameText.toLowerCase()) || 
+                                selectedCatNameText.toLowerCase().includes(b.name.toLowerCase())) {
+                                b.spent = (b.spent || 0) + expenseAmount;
+                            }
+                            return b;
+                        });
+
+                        localStorage.setItem('user_budgets', JSON.stringify(savedBudgets));
+                    }
+                }
+            });
+        }
+    });
+
     // Add Translations dictionary mapping for dashboard elements
     if (typeof globalTranslations !== 'undefined') {
         globalTranslations.bn.all_accounts = "All Accounts";
@@ -275,35 +325,5 @@
             applyGlobalTranslation(currentLang);
         }
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const expenseForm = document.querySelector("#amountModal form");
-        if (expenseForm) {
-            expenseForm.addEventListener("submit", function() {
-                document.body.classList.remove('modal-open');
-                const txType = document.getElementById('inputTxType').value;
-                
-                if (txType === 'expense') {
-                    const amountInput = expenseForm.querySelector("input[name='amount']").value;
-                    const expenseAmount = parseFloat(amountInput) || 0;
-
-                    if (expenseAmount > 0 && selectedCatNameText) {
-                        let savedBudgets = JSON.parse(localStorage.getItem('user_budgets')) || [];
-                        
-                        savedBudgets = savedBudgets.map(b => {
-                            if (b.name.toLowerCase().trim() === selectedCatNameText.toLowerCase().trim() || 
-                                b.name.toLowerCase().includes(selectedCatNameText.toLowerCase()) || 
-                                selectedCatNameText.toLowerCase().includes(b.name.toLowerCase())) {
-                                b.spent = (b.spent || 0) + expenseAmount;
-                            }
-                            return b;
-                        });
-
-                        localStorage.setItem('user_budgets', JSON.stringify(savedBudgets));
-                    }
-                }
-            });
-        }
-    });
 </script>
 {% endblock %}
