@@ -18,8 +18,47 @@
         {% for t in transactions %}
         <div class="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex justify-between items-center transition-colors shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">
-                    <i class="fas fa-tag"></i>
+                <!-- ক্যাটাগরি এবং Income/Expense অনুযায়ী ডাইনামিক আইকন -->
+                <div class="w-9 h-9 rounded-xl {% if t.transaction_type == 'income' %}bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400{% else %}bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400{% endif %} flex items-center justify-center text-xs">
+                    <!-- Income Categories -->
+                    {% if t.category == 'Job' %}<i class="fas fa-briefcase"></i>
+                    {% elif t.category == 'Business' %}<i class="fas fa-store"></i>
+                    {% elif t.category == 'Freelancing' %}<i class="fas fa-laptop-code"></i>
+                    {% elif t.category == 'Tuition' %}<i class="fas fa-graduation-cap"></i>
+                    {% elif t.category == 'Gift' %}<i class="fas fa-gift"></i>
+                    {% elif t.category == 'Money Back' %}<i class="fas fa-undo-alt"></i>
+                    {% elif t.category == 'Pocket Money' %}<i class="fas fa-hand-holding-usd"></i>
+                    
+                    <!-- Expense Categories (29 Items) -->
+                    {% elif t.category == 'Tuition & Fees' %}<i class="fas fa-graduation-cap"></i>
+                    {% elif t.category == 'Books & Notes' %}<i class="fas fa-book"></i>
+                    {% elif t.category == 'Stationery' %}<i class="fas fa-pen"></i>
+                    {% elif t.category == 'Courses & Training' %}<i class="fas fa-laptop-code"></i>
+                    {% elif t.category == 'Mess / Hall Bill' %}<i class="fas fa-utensils"></i>
+                    {% elif t.category == 'Restaurants & Fast Food' %}<i class="fas fa-hamburger"></i>
+                    {% elif t.category == 'Tea & Snacks' %}<i class="fas fa-coffee"></i>
+                    {% elif t.category == 'Groceries' %}<i class="fas fa-shopping-basket"></i>
+                    {% elif t.category == 'Bus / Local Transport' %}<i class="fas fa-bus"></i>
+                    {% elif t.category == 'Rickshaw & CNG' %}<i class="fas fa-shuttle-van"></i>
+                    {% elif t.category == 'Bike Fuel / Maintenance' %}<i class="fas fa-motorcycle"></i>
+                    {% elif t.category == 'Tour & Travel' %}<i class="fas fa-plane"></i>
+                    {% elif t.category == 'Rent / Room Rent' %}<i class="fas fa-home"></i>
+                    {% elif t.category == 'Electricity & Gas' %}<i class="fas fa-bolt"></i>
+                    {% elif t.category == 'Internet & WiFi' %}<i class="fas fa-wifi"></i>
+                    {% elif t.category == 'Mobile Recharge' %}<i class="fas fa-mobile-alt"></i>
+                    {% elif t.category == 'bKash / Nagad' %}<i class="fas fa-wallet"></i>
+                    {% elif t.category == 'Clothing & Tailoring' %}<i class="fas fa-tshirt"></i>
+                    {% elif t.category == 'Personal Care' %}<i class="fas fa-cut"></i>
+                    {% elif t.category == 'Medical & Pharmacy' %}<i class="fas fa-medkit"></i>
+                    {% elif t.category == 'Fitness & Gym' %}<i class="fas fa-dumbbell"></i>
+                    {% elif t.category == 'Entertainment & Movies' %}<i class="fas fa-film"></i>
+                    {% elif t.category == 'Gadgets & Electronics' %}<i class="fas fa-laptop"></i>
+                    {% elif t.category == 'Home Maintenance' %}<i class="fas fa-tools"></i>
+                    {% elif t.category == 'Charity & Donation' %}<i class="fas fa-hand-holding-heart"></i>
+                    {% elif t.category == 'Family & Friends' %}<i class="fas fa-users"></i>
+                    {% elif t.category == 'Pet Care' %}<i class="fas fa-paw"></i>
+                    {% elif t.category == 'Emergency Expense' %}<i class="fas fa-exclamation-triangle"></i>
+                    {% else %}<i class="fas fa-tag"></i>{% endif %}
                 </div>
                 <div>
                     <!-- Direct string output for category -->
