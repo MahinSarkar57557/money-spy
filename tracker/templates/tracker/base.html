@@ -170,7 +170,6 @@
                     el.textContent = globalTranslations[lang][key];
                 }
             });
-            // Also handle placeholders if needed
             const placeholders = document.querySelectorAll('[data-translate-placeholder]');
             placeholders.forEach(el => {
                 const key = el.getAttribute('data-translate-placeholder');
@@ -180,7 +179,6 @@
             });
         }
 
-        // Apply on every page load based on LocalStorage
         document.addEventListener("DOMContentLoaded", () => {
             const savedLang = localStorage.getItem('language') || 'bn';
             document.documentElement.lang = savedLang;
