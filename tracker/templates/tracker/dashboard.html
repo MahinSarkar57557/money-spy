@@ -154,27 +154,31 @@
     </div>
 </div>
 
-<!-- AMOUNT INPUT SUB-MODAL (Fixed Date Input Width Issue) -->
+<!-- AMOUNT INPUT SUB-MODAL (Date and Amount boxes strictly matched) -->
 <div id="amountModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center px-4">
-    <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-5 shadow-2xl">
+    <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-5 shadow-2xl box-border">
         <form method="POST" action="{% url 'add_transaction' %}">
             {% csrf_token %}
             <input type="hidden" name="transaction_type" id="inputTxType" value="expense">
             <input type="hidden" name="category" id="inputCategoryId">
             <h3 id="selectedCategoryName" class="text-sm font-bold text-emerald-600 dark:text-emerald-400 text-center mb-3 truncate">Category</h3>
+            
             <div class="mb-3">
                 <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="amount_label">পরিমাণ (Amount Taka)</label>
-                <input type="number" step="1" name="amount" required placeholder="0" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
+                <input type="number" step="1" name="amount" required placeholder="0" class="w-full box-border px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
+            
             <div class="mb-3">
                 <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="date_label">তারিখ (Date)</label>
-                <!-- Added box-border and max-w-full to prevent overflow on mobile -->
-                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full box-border max-w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
+                <!-- Exact matching width, box-sizing, and padding style as amount field -->
+                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full box-border px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
+            
             <div class="mb-4">
                 <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="note_label">নোট (Description - Optional)</label>
-                <input type="text" name="description" data-translate-placeholder="note_placeholder" placeholder="কী বাবদ খরচ/আয়?" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500">
+                <input type="text" name="description" data-translate-placeholder="note_placeholder" placeholder="কী বাবদ খরচ/আয়?" class="w-full box-border px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-xs focus:outline-none focus:border-emerald-500">
             </div>
+            
             <div class="flex space-x-2">
                 <button type="button" onclick="closeAmountModal()" class="w-1/2 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition cursor-pointer" data-translate="cancel_btn">বাতিল</button>
                 <button type="submit" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer" data-translate="save_btn">সেভ করুন</button>
@@ -241,7 +245,6 @@
                 });
             }
 
-            // Fixed Sortable Configuration for Mobile Touch Support (Reduced delay to 200ms)
             new Sortable(expenseList, {
                 animation: 150,
                 delay: 200,
