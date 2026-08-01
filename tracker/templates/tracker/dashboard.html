@@ -131,8 +131,20 @@
             <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg font-bold cursor-pointer">&times;</button>
         </div>
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0" data-translate="select_category_prompt">একটি ক্যাটাগরি সিলেক্ট করুন</p>
-        <div class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
-            {% for cat in all_categories %}
+        
+        <!-- Expense Categories Container -->
+        <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
+            {% for cat in expense_categories %}
+            <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer">
+                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5"></i>
+                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full">{{ cat.name }}</span>
+            </button>
+            {% endfor %}
+        </div>
+
+        <!-- Income Categories Container -->
+        <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6 hidden">
+            {% for cat in income_categories %}
             <button type="button" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer">
                 <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5"></i>
                 <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full">{{ cat.name }}</span>
@@ -174,51 +186,33 @@
     let currentTxType = 'expense';
     let selectedCatNameText = "";
 
-    const incomeCategoryNames = [
-        "job / salary", "business", "pocket money", "freelancing", "tuition", 
-        "investments", "rental income", "gift / bonus", "selling items", 
-        "loan refund", "commission", "side hustle", "awards / grants", "dividends", "other income"
-    ];
-
     function openModal(type) {
         currentTxType = type;
         document.getElementById('inputTxType').value = type;
         
         const currentLang = localStorage.getItem('language') || 'bn';
         const titleEl = document.getElementById('modalTitle');
-        if (type === 'expense') {
-            titleEl.innerText = currentLang === 'en' ? 'Add New Expense' : 'নতুন খরচ যোগ করুন';
-            titleEl.setAttribute('data-translate-bn', 'নতুন খরচ যোগ করুন');
-            titleEl.setAttribute('data-translate-en', 'Add New Expense');
-        } else {
+        const expenseList = document.getElementById('expenseCategoryList');
+        const incomeList = document.getElementById('incomeCategoryList');
+
+        if (type === 'income') {
             titleEl.innerText = currentLang === 'en' ? 'Add New Income' : 'নতুন আয় যোগ করুন';
             titleEl.setAttribute('data-translate-bn', 'নতুন আয় যোগ করুন');
             titleEl.setAttribute('data-translate-en', 'Add New Income');
+            
+            incomeList.classList.remove('hidden');
+            expenseList.classList.add('hidden');
+        } else {
+            titleEl.innerText = currentLang === 'en' ? 'Add New Expense' : 'নতুন খরচ যোগ করুন';
+            titleEl.setAttribute('data-translate-bn', 'নতুন খরচ যোগ করুন');
+            titleEl.setAttribute('data-translate-en', 'Add New Expense');
+            
+            expenseList.classList.remove('hidden');
+            incomeList.classList.add('hidden');
         }
         
         // Background Scroll Lock Enabled
         document.body.classList.add('modal-open');
-
-        const categoryButtons = document.querySelectorAll('#transactionModal .grid button');
-        categoryButtons.forEach(btn => {
-            const catName = btn.querySelector('span').innerText.toLowerCase().trim();
-            const isIncomeCat = incomeCategoryNames.some(inc => catName.includes(inc) || inc.includes(catName));
-            
-            if (type === 'income') {
-                if (isIncomeCat) {
-                    btn.style.display = 'flex';
-                } else {
-                    btn.style.display = 'none';
-                }
-            } else {
-                if (!isIncomeCat) {
-                    btn.style.display = 'flex';
-                } else {
-                    btn.style.display = 'none';
-                }
-            }
-        });
-
         document.getElementById('transactionModal').classList.remove('hidden');
     }
 
