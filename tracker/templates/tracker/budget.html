@@ -57,7 +57,7 @@
         
         <div id="budgetCategoryList" class="flex flex-col gap-3">
             {% for item in budget_data %}
-            <div data-id="{{ item.budget.category.name }}" class="budget-item bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex flex-col gap-2.5 transition-colors select-none cursor-grab active:cursor-grabbing">
+            <div data-id="{{ item.budget.category }}" class="budget-item bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex flex-col gap-2.5 transition-colors select-none cursor-grab active:cursor-grabbing">
                 <div class="flex justify-between items-center pointer-events-none">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs">
@@ -65,7 +65,7 @@
                         </div>
                         <div>
                             <h4 class="text-xs font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                                {{ item.budget.category.name }}
+                                {{ item.budget.category }}
                                 <!-- ছোট এডিট বাটন (পেন্সিল আইকন) -->
                                 <a href="{% url 'edit_budget' item.budget.id %}" class="text-gray-400 hover:text-emerald-600 text-[11px] transition cursor-pointer pointer-events-auto" title="Edit Budget">
                                     <i class="fas fa-pen"></i>
@@ -80,7 +80,7 @@
                     </div>
                 </div>
 
-                <!-- Progress Bar with Dynamic Color based on rem_percentage -->
+                <!-- Progress Bar with Dynamic Color (100-70% Green, 70-30% Yellow, Below 30% or Exceeded -> Red) -->
                 <div class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden mt-1 pointer-events-none">
                     <div class="h-full rounded-full 
                         {% if item.remaining <= 0 %}
@@ -123,11 +123,11 @@
 
             <div>
                 <label class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 block mb-1.5" data-translate="select_category_label">Select Expense Category</label>
-                <!-- শুধুমাত্র Expense ক্যাটাগরিগুলো দেখানোর জন্য expense_categories ব্যবহার করা হয়েছে -->
+                <!-- ক্যাটাগরি সিলেকশন গ্রিড (২৯টি ক্যাটাগরি ও আইকন সহ) -->
                 <div class="grid grid-cols-3 gap-2.5 overflow-y-auto max-h-56 p-1">
                     {% for cat in expense_categories %}
                     <label class="cursor-pointer">
-                        <input type="radio" name="category" value="{{ cat.id }}" required class="peer hidden">
+                        <input type="radio" name="category" value="{{ cat.name }}" required class="peer hidden">
                         <div class="flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 peer-checked:bg-emerald-50 peer-checked:border-emerald-600 peer-checked:ring-2 peer-checked:ring-emerald-500 border border-gray-200 dark:border-gray-700 rounded-2xl transition text-center gap-1">
                             <i class="{{ cat.icon }} text-lg text-emerald-600 mb-1"></i>
                             <span class="text-[10px] font-semibold text-gray-700 dark:text-white truncate w-full">{{ cat.name }}</span>
@@ -155,13 +155,13 @@
 
 <script>
     function openBudgetModal() {
-        document.body.classList.add('overflow-hidden'); // Background fixed/locked
+        document.body.classList.add('overflow-hidden');
         document.getElementById('budgetModal').classList.remove('hidden');
         document.getElementById('budgetModal').classList.add('flex');
     }
 
     function closeBudgetModal() {
-        document.body.classList.remove('overflow-hidden'); // Background scroll restored
+        document.body.classList.remove('overflow-hidden');
         document.getElementById('budgetModal').classList.remove('flex');
         document.getElementById('budgetModal').classList.add('hidden');
     }
@@ -177,7 +177,6 @@
                 });
             }
 
-            // Sortable configuration with 200ms touch delay for mobile drag & drop
             new Sortable(budgetList, {
                 animation: 150,
                 delay: 200,
