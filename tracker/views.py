@@ -96,7 +96,7 @@ def dashboard_view(request):
         {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
     ]
 
-    # আয়ের নতুন ক্যাটাগরিগুলো এবং আইকন
+    # আয়ের নতুন ক্যাটাগরিগুলো এবং আইকন
     income_categories = [
         {"name": "Job", "icon": "fas fa-briefcase"},
         {"name": "Business", "icon": "fas fa-store"},
@@ -386,6 +386,39 @@ def budget_view(request):
 
     all_categories = [cat[0] for cat in CATEGORY_CHOICES]
 
+    # খরচের ২৯টি ক্যাটাগরি এবং সেগুলোর আইকন (যা ড্যাশবোর্ডে ব্যবহার করা হয়েছে)
+    expense_categories = [
+        {"name": "Tuition & Fees", "icon": "fas fa-graduation-cap"},
+        {"name": "Books & Notes", "icon": "fas fa-book"},
+        {"name": "Stationery", "icon": "fas fa-pen"},
+        {"name": "Courses & Training", "icon": "fas fa-laptop-code"},
+        {"name": "Mess / Hall Bill", "icon": "fas fa-utensils"},
+        {"name": "Restaurants & Fast Food", "icon": "fas fa-hamburger"},
+        {"name": "Tea & Snacks", "icon": "fas fa-coffee"},
+        {"name": "Groceries", "icon": "fas fa-shopping-basket"},
+        {"name": "Bus / Local Transport", "icon": "fas fa-bus"},
+        {"name": "Rickshaw & CNG", "icon": "fas fa-shuttle-van"},
+        {"name": "Bike Fuel / Maintenance", "icon": "fas fa-motorcycle"},
+        {"name": "Tour & Travel", "icon": "fas fa-plane"},
+        {"name": "Rent / Room Rent", "icon": "fas fa-home"},
+        {"name": "Electricity & Gas", "icon": "fas fa-bolt"},
+        {"name": "Internet & WiFi", "icon": "fas fa-wifi"},
+        {"name": "Mobile Recharge", "icon": "fas fa-mobile-alt"},
+        {"name": "bKash / Nagad", "icon": "fas fa-wallet"},
+        {"name": "Clothing & Tailoring", "icon": "fas fa-tshirt"},
+        {"name": "Personal Care", "icon": "fas fa-cut"},
+        {"name": "Medical & Pharmacy", "icon": "fas fa-medkit"},
+        {"name": "Fitness & Gym", "icon": "fas fa-dumbbell"},
+        {"name": "Entertainment & Movies", "icon": "fas fa-film"},
+        {"name": "Gadgets & Electronics", "icon": "fas fa-laptop"},
+        {"name": "Home Maintenance", "icon": "fas fa-tools"},
+        {"name": "Charity & Donation", "icon": "fas fa-hand-holding-heart"},
+        {"name": "Family & Friends", "icon": "fas fa-users"},
+        {"name": "Pet Care", "icon": "fas fa-paw"},
+        {"name": "Miscellaneous", "icon": "fas fa-box"},
+        {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
+    ]
+
     context = {
         'budget_data': budget_data,
         'form': form,
@@ -395,6 +428,7 @@ def budget_view(request):
         'total_spent_amount': total_spent_amount,
         'month_name': calendar.month_name[current_month],
         'all_categories': all_categories,
+        'expense_categories': expense_categories,  # এটি যুক্ত করা হয়েছে
     }
     return render(request, 'tracker/budget.html', context)
 
