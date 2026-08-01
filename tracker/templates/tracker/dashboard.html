@@ -154,21 +154,22 @@
     </div>
 </div>
 
-<!-- AMOUNT INPUT SUB-MODAL -->
-<div id="amountModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
-    <div class="bg-white dark:bg-gray-900 w-80 rounded-3xl p-5 shadow-2xl">
+<!-- AMOUNT INPUT SUB-MODAL (Fixed Date Input Width Issue) -->
+<div id="amountModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center px-4">
+    <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-5 shadow-2xl">
         <form method="POST" action="{% url 'add_transaction' %}">
             {% csrf_token %}
             <input type="hidden" name="transaction_type" id="inputTxType" value="expense">
             <input type="hidden" name="category" id="inputCategoryId">
-            <h3 id="selectedCategoryName" class="text-sm font-bold text-emerald-600 dark:text-emerald-400 text-center mb-3">Category</h3>
+            <h3 id="selectedCategoryName" class="text-sm font-bold text-emerald-600 dark:text-emerald-400 text-center mb-3 truncate">Category</h3>
             <div class="mb-3">
                 <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="amount_label">পরিমাণ (Amount Taka)</label>
                 <input type="number" step="1" name="amount" required placeholder="0" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
             <div class="mb-3">
                 <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="date_label">তারিখ (Date)</label>
-                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
+                <!-- Added box-border and max-w-full to prevent overflow on mobile -->
+                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full box-border max-w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
             <div class="mb-4">
                 <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-translate="note_label">নোট (Description - Optional)</label>
@@ -240,11 +241,12 @@
                 });
             }
 
+            // Fixed Sortable Configuration for Mobile Touch Support (Reduced delay to 200ms)
             new Sortable(expenseList, {
                 animation: 150,
-                delay: 2000,
+                delay: 200,
                 delayOnTouchOnly: true,
-                touchStartThreshold: 5,
+                touchStartThreshold: 3,
                 ghostClass: 'bg-emerald-100',
                 onEnd: function () {
                     const order = Array.from(expenseList.querySelectorAll('.category-item')).map(item => item.getAttribute('data-id'));
