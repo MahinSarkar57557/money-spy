@@ -95,7 +95,7 @@
                     
                     <!-- Icon Badge -->
                     <div class="w-8 h-8 bg-white dark:bg-gray-900 border-2 rounded-full flex items-center justify-center shadow-md text-xs" style="border-color: {{ cat.color }}; color: {{ cat.color }};">
-                        <i class="{{ cat.icon }}"></i>
+                        <i class="fas fa-tag"></i>
                     </div>
                     
                     <!-- Pointer Line -->
@@ -132,22 +132,12 @@
         </div>
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0" data-translate="select_category_prompt">একটি ক্যাটাগরি সিলেক্ট করুন</p>
         
-        <!-- Expense Categories Container (Draggable with 2s delay) -->
+        <!-- Fixed Categories Container -->
         <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
-            {% for cat in expense_categories %}
-            <button type="button" data-id="{{ cat.id }}" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
-                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
-                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
-            </button>
-            {% endfor %}
-        </div>
-
-        <!-- Income Categories Container (Draggable with 2s delay) -->
-        <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6 hidden">
-            {% for cat in income_categories %}
-            <button type="button" data-id="{{ cat.id }}" onclick="selectCategory('{{ cat.id }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
-                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
-                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
+            {% for cat in all_categories %}
+            <button type="button" data-id="{{ cat }}" onclick="selectCategory('{{ cat }}', '{{ cat }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
+                <i class="fas fa-tag text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
+                <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat }}</span>
             </button>
             {% endfor %}
         </div>
@@ -195,33 +185,20 @@
         
         const currentLang = localStorage.getItem('language') || 'bn';
         const titleEl = document.getElementById('modalTitle');
-        const expenseList = document.getElementById('expenseCategoryList');
-        const incomeList = document.getElementById('incomeCategoryList');
 
         if (type === 'income') {
             titleEl.innerText = currentLang === 'en' ? 'Add New Income' : 'নতুন আয় যোগ করুন';
-            titleEl.setAttribute('data-translate-bn', 'নতুন আয় যোগ করুন');
-            titleEl.setAttribute('data-translate-en', 'Add New Income');
-            
-            incomeList.classList.remove('hidden');
-            expenseList.classList.add('hidden');
         } else {
             titleEl.innerText = currentLang === 'en' ? 'Add New Expense' : 'নতুন খরচ যোগ করুন';
-            titleEl.setAttribute('data-translate-bn', 'নতুন খরচ যোগ করুন');
-            titleEl.setAttribute('data-translate-en', 'Add New Expense');
-            
-            expenseList.classList.remove('hidden');
-            incomeList.classList.add('hidden');
         }
         
-        // Background Scroll Lock Enabled
         document.body.classList.add('modal-open');
         document.getElementById('transactionModal').classList.remove('hidden');
     }
 
     function closeModal() {
         document.getElementById('transactionModal').classList.add('hidden');
-        document.body.classList.remove('modal-open'); // Background Scroll Unlock
+        document.body.classList.remove('modal-open');
     }
 
     function selectCategory(catId, catName) {
@@ -234,12 +211,10 @@
 
     function closeAmountModal() {
         document.getElementById('amountModal').classList.add('hidden');
-        document.body.classList.remove('modal-open'); // Background Scroll Unlock
+        document.body.classList.remove('modal-open');
     }
 
-    // Initialize Sortable for Drag and Drop Categories with 2-second Long Press Delay
     document.addEventListener("DOMContentLoaded", function () {
-        // Load Saved Order for Expense Categories
         const expenseList = document.getElementById('expenseCategoryList');
         if (expenseList) {
             const savedExpenseOrder = JSON.parse(localStorage.getItem('expense_category_order'));
@@ -252,8 +227,8 @@
 
             new Sortable(expenseList, {
                 animation: 150,
-                delay: 2000, // ২ সেকেন্ড (2000ms) চেপে ধরে রাখলে ড্রাগ শুরু হবে
-                delayOnTouchOnly: true, // শুধু টাচ ডিভাইসে ডেল কাজ করবে
+                delay: 2000,
+                delayOnTouchOnly: true,
                 touchStartThreshold: 5,
                 ghostClass: 'bg-emerald-100',
                 onEnd: function () {
@@ -262,100 +237,6 @@
                 }
             });
         }
-
-        // Load Saved Order for Income Categories
-        const incomeList = document.getElementById('incomeCategoryList');
-        if (incomeList) {
-            const savedIncomeOrder = JSON.parse(localStorage.getItem('income_category_order'));
-            if (savedIncomeOrder) {
-                savedIncomeOrder.forEach(id => {
-                    const item = incomeList.querySelector(`[data-id='${id}']`);
-                    if (item) incomeList.appendChild(item);
-                });
-            }
-
-            new Sortable(incomeList, {
-                animation: 150,
-                delay: 2000, // ২ সেকেন্ড (2000ms) চেপে ধরে রাখলে ড্রাগ শুরু হবে
-                delayOnTouchOnly: true,
-                touchStartThreshold: 5,
-                ghostClass: 'bg-emerald-100',
-                onEnd: function () {
-                    const order = Array.from(incomeList.querySelectorAll('.category-item')).map(item => item.getAttribute('data-id'));
-                    localStorage.setItem('income_category_order', JSON.stringify(order));
-                }
-            });
-        }
-
-        const expenseForm = document.querySelector("#amountModal form");
-        if (expenseForm) {
-            expenseForm.addEventListener("submit", function() {
-                document.body.classList.remove('modal-open');
-                const txType = document.getElementById('inputTxType').value;
-                
-                if (txType === 'expense') {
-                    const amountInput = expenseForm.querySelector("input[name='amount']").value;
-                    const expenseAmount = parseFloat(amountInput) || 0;
-
-                    if (expenseAmount > 0 && selectedCatNameText) {
-                        let savedBudgets = JSON.parse(localStorage.getItem('user_budgets')) || [];
-                        
-                        savedBudgets = savedBudgets.map(b => {
-                            if (b.name.toLowerCase().trim() === selectedCatNameText.toLowerCase().trim() || 
-                                b.name.toLowerCase().includes(selectedCatNameText.toLowerCase()) || 
-                                selectedCatNameText.toLowerCase().includes(b.name.toLowerCase())) {
-                                b.spent = (b.spent || 0) + expenseAmount;
-                            }
-                            return b;
-                        });
-
-                        localStorage.setItem('user_budgets', JSON.stringify(savedBudgets));
-                    }
-                }
-            });
-        }
     });
-
-    // Add Translations dictionary mapping for dashboard elements
-    if (typeof globalTranslations !== 'undefined') {
-        globalTranslations.bn.all_accounts = "All Accounts";
-        globalTranslations.en.all_accounts = "All Accounts";
-        
-        globalTranslations.bn.clear_today_tooltip = "আজকের হিসাব মুছুন";
-        globalTranslations.en.clear_today_tooltip = "Clear today's transactions";
-
-        globalTranslations.bn.currency_taka = "Taka";
-        globalTranslations.en.currency_taka = "Taka";
-
-        globalTranslations.bn.total_expense_label = "TOTAL EXPENSE";
-        globalTranslations.en.total_expense_label = "TOTAL EXPENSE";
-
-        globalTranslations.bn.select_category_prompt = "একটি ক্যাটাগরি সিলেক্ট করুন";
-        globalTranslations.en.select_category_prompt = "Select a category";
-
-        globalTranslations.bn.amount_label = "পরিমাণ (Amount Taka)";
-        globalTranslations.en.amount_label = "Amount (Taka)";
-
-        globalTranslations.bn.date_label = "তারিখ (Date)";
-        globalTranslations.en.date_label = "Date";
-
-        globalTranslations.bn.note_label = "নোট (Description - Optional)";
-        globalTranslations.en.note_label = "Note (Description - Optional)";
-
-        globalTranslations.bn.note_placeholder = "কী বাবদ খরচ/আয়?";
-        globalTranslations.en.note_placeholder = "What is this for?";
-
-        globalTranslations.bn.cancel_btn = "বাতিল";
-        globalTranslations.en.cancel_btn = "Cancel";
-
-        globalTranslations.bn.save_btn = "সেভ করুন";
-        globalTranslations.en.save_btn = "Save";
-
-        // Re-apply translation immediately
-        const currentLang = localStorage.getItem('language') || 'bn';
-        if (typeof applyGlobalTranslation === 'function') {
-            applyGlobalTranslation(currentLang);
-        }
-    }
 </script>
 {% endblock %}
