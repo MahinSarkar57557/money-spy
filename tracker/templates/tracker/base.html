@@ -52,6 +52,16 @@
             max-width: 100% !important;
             box-sizing: border-box !important;
         }
+
+        /* Smooth Page Fade-In Transition to eliminate screen flash */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
     </style>
     <!-- Instant Dark Mode Script -->
     <script>
@@ -143,6 +153,13 @@
         document.addEventListener("DOMContentLoaded", () => {
             const savedLang = localStorage.getItem('language') || 'bn';
             applyGlobalTranslation(savedLang);
+        });
+
+        // Smooth browser back/forward and page caching control
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
         });
     </script>
 
