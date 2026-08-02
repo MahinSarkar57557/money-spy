@@ -31,14 +31,14 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* ১. মডাল ওপেন থাকলে ব্যাকগ্রাউন্ড স্ক্রল লক করার জন্য */
+        /* মডাল ওপেন থাকলে ব্যাকগ্রাউন্ড স্ক্রল লক করার জন্য */
         body.modal-open {
             overflow: hidden !important;
             position: fixed;
             width: 100%;
         }
 
-        /* ২. ডার্ক মোডে টেক্সট ও ফর্ম ফিল্ড ঠিক করার জন্য */
+        /* ডার্ক মোডে টেক্সট ও ফর্ম ফিল্ড ঠিক করার জন্য */
         .dark-mode, .dark-mode body {
             color: #f3f4f6 !important;
         }
@@ -48,7 +48,7 @@
             border-color: #374151 !important;
         }
 
-        /* ৩. তারিখের (Date) বক্স বাইরে চলে যাওয়া রোধ করতে */
+        /* তারিখের (Date) বক্স বাইরে চলে যাওয়া রোধ করতে */
         input[type="date"], .date-input-field {
             width: 100% !important;
             max-width: 100% !important;
@@ -77,110 +77,46 @@
         <div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-3 px-6 flex justify-around items-center text-gray-600 dark:text-gray-400 shadow-xl z-50 transition-colors duration-300">
             <a href="{% url 'dashboard' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 <i class="fas fa-chart-pie text-xl"></i>
-                <span class="text-[11px] mt-1 font-medium" data-translate="nav_home">হোম</span>
+                <span class="text-[11px] mt-1 font-medium" data-bn="হোম" data-en="Home">হোম</span>
             </a>
             <a href="{% url 'calendar' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 <i class="fas fa-calendar-alt text-xl"></i>
-                <span class="text-[11px] mt-1 font-medium" data-translate="nav_calendar">ক্যালেন্ডার</span>
+                <span class="text-[11px] mt-1 font-medium" data-bn="ক্যালেন্ডার" data-en="Calendar">ক্যালেন্ডার</span>
             </a>
             <a href="{% url 'budget' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 <i class="fas fa-wallet text-xl"></i>
-                <span class="text-[11px] mt-1 font-medium" data-translate="nav_budget">বাজেট</span>
+                <span class="text-[11px] mt-1 font-medium" data-bn="বাজেট" data-en="Budget">বাজেট</span>
             </a>
             <a href="{% url 'settings' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 <i class="fas fa-cog text-xl"></i>
-                <span class="text-[11px] mt-1 font-medium" data-translate="nav_settings">সেটিংস</span>
+                <span class="text-[11px] mt-1 font-medium" data-bn="সেটিংস" data-en="Settings">সেটিংস</span>
             </a>
         </div>
 
     </div>
 
-    <!-- Global Translation Dictionary & Script -->
+    <!-- Global Translation Script -->
     <script>
-        const globalTranslations = {
-            bn: {
-                nav_home: "হোম",
-                nav_calendar: "ক্যালেন্ডার",
-                nav_budget: "বাজেট",
-                nav_settings: "সেটিংস",
-                settings_title: "সেটিংস",
-                settings_subtitle: "আপনার অ্যাপের পছন্দসমূহ কাস্টমাইজ করুন",
-                lang_heading: "ভাষা / Language",
-                lang_desc: "বাংলা সিলেক্ট করা আছে",
-                dark_heading: "ডার্ক মোড / Dark Mode",
-                dark_desc: "চোখের আরামদায়ক থিম",
-                app_version: "ভার্শন ১.০ | সম্পূর্ণ টাকায় হিসাব",
-                budget_title: "মাসিক বাজেট প্ল্যানার",
-                financial_summary: "এই মাসের আর্থিক বিবরণী",
-                budget_expense_overview: "বাজেট ও খরচ ওভারভিউ",
-                set_budget_btn: "+ বাজেট সেট করুন",
-                total_expense: "মোট খরচ",
-                total_budget: "মোট বাজেট",
-                label_budget: "বাজেট",
-                label_remaining: "বাকি",
-                modal_set_budget_title: "মাসিক বাজেট সেট করুন",
-                label_month: "মাস",
-                label_year: "বছর",
-                select_category_label: "ক্যাটাগরি সিলেক্ট করুন",
-                budget_amount_label: "বাজেটের পরিমাণ (৳)",
-                btn_cancel: "বাতিল",
-                btn_save_budget: "বাজেট সংরক্ষণ করুন",
-                calendar_title: "মাসিক ক্যালেন্ডার",
-                recent_expense: "গত ৭ দিনের খরচ",
-                daily_trend: "Daily Trend"
-            },
-            en: {
-                nav_home: "Home",
-                nav_calendar: "Calendar",
-                nav_budget: "Budget",
-                nav_settings: "Settings",
-                settings_title: "Settings",
-                settings_subtitle: "Customize your app preferences",
-                lang_heading: "Language / ভাষা",
-                lang_desc: "English is selected",
-                dark_heading: "Dark Mode / ডার্ক মোড",
-                dark_desc: "Eye-friendly comfortable theme",
-                app_version: "Version 1.0 | All calculations in Taka",
-                budget_title: "Monthly Budget Planner",
-                financial_summary: "This Month's Financial Summary",
-                budget_expense_overview: "Budget & Expense Overview",
-                set_budget_btn: "+ Set Budget",
-                total_expense: "Total Expense",
-                total_budget: "Total Budget",
-                label_budget: "Budget",
-                label_remaining: "Remaining",
-                modal_set_budget_title: "Set Monthly Budget",
-                label_month: "Month",
-                label_year: "Year",
-                select_category_label: "Select Category",
-                budget_amount_label: "Budget Amount (৳)",
-                btn_cancel: "Cancel",
-                btn_save_budget: "Save Budget",
-                calendar_title: "Monthly Calendar",
-                recent_expense: "Last 7 Days Expense",
-                daily_trend: "Daily Trend"
-            }
-        };
-
         function applyGlobalTranslation(lang) {
-            const elements = document.querySelectorAll('[data-translate]');
-            elements.forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if (globalTranslations[lang] && globalTranslations[lang][key]) {
-                    el.textContent = globalTranslations[lang][key];
-                }
-            });
-            const placeholders = document.querySelectorAll('[data-translate-placeholder]');
-            placeholders.forEach(el => {
-                const key = el.getAttribute('data-translate-placeholder');
-                if (globalTranslations[lang] && globalTranslations[lang][key]) {
-                    el.placeholder = globalTranslations[lang][key];
+            document.querySelectorAll('[data-bn]').forEach(el => {
+                if (lang === 'en') {
+                    if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-en')) {
+                        el.placeholder = el.getAttribute('data-placeholder-en');
+                    } else if (el.hasAttribute('data-en')) {
+                        el.innerText = el.getAttribute('data-en');
+                    }
+                } else {
+                    if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-bn')) {
+                        el.placeholder = el.getAttribute('data-placeholder-bn');
+                    } else if (el.hasAttribute('data-bn')) {
+                        el.innerText = el.getAttribute('data-bn');
+                    }
                 }
             });
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const savedLang = localStorage.getItem('language') || 'bn';
+            const savedLang = localStorage.getItem('app_language') || 'bn';
             document.documentElement.lang = savedLang;
             applyGlobalTranslation(savedLang);
         });
