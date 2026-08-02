@@ -107,9 +107,6 @@ def dashboard_view(request):
         {"name": "Pocket Money", "icon": "fas fa-hand-holding-usd"},
     ]
 
-    # ক্যাটাগরি অনুযায়ী আইকনের একটি ডিকশনারি তৈরি করে নেওয়া সুবিধাজনক
-    icon_dict = {cat["name"]: cat["icon"] for cat in expense_categories}
-
     active_categories = []
     for cat in expense_categories:
         cat_name = cat["name"]
@@ -129,7 +126,7 @@ def dashboard_view(request):
                 'name': cat_name,
                 'percentage': percentage,
                 'total': cat_total,
-                'icon': cat["icon"], # আইকন এখানে যুক্ত করা হলো
+                'icon': cat["icon"],
             })
 
     processed_categories = []
@@ -167,7 +164,7 @@ def dashboard_view(request):
             'name': cat['name'],
             'percentage': cat['percentage'],
             'total': cat['total'],
-            'icon': cat['icon'], # পাই চার্টে রেন্ডার হওয়ার জন্য আইকন পাস করা হলো
+            'icon': cat['icon'],
             'color': cat_color,
             'top': round(top_pos, 2),
             'left': round(left_pos, 2),
@@ -324,6 +321,40 @@ def budget_view(request):
         current_month = today.month
         current_year = today.year
 
+    expense_categories = [
+        {"name": "Tuition & Fees", "icon": "fas fa-graduation-cap"},
+        {"name": "Books & Notes", "icon": "fas fa-book"},
+        {"name": "Stationery", "icon": "fas fa-pen"},
+        {"name": "Courses & Training", "icon": "fas fa-laptop-code"},
+        {"name": "Mess / Hall Bill", "icon": "fas fa-utensils"},
+        {"name": "Restaurants & Fast Food", "icon": "fas fa-hamburger"},
+        {"name": "Tea & Snacks", "icon": "fas fa-coffee"},
+        {"name": "Groceries", "icon": "fas fa-shopping-basket"},
+        {"name": "Bus / Local Transport", "icon": "fas fa-bus"},
+        {"name": "Rickshaw & CNG", "icon": "fas fa-shuttle-van"},
+        {"name": "Bike Fuel / Maintenance", "icon": "fas fa-motorcycle"},
+        {"name": "Tour & Travel", "icon": "fas fa-plane"},
+        {"name": "Rent / Room Rent", "icon": "fas fa-home"},
+        {"name": "Electricity & Gas", "icon": "fas fa-bolt"},
+        {"name": "Internet & WiFi", "icon": "fas fa-wifi"},
+        {"name": "Mobile Recharge", "icon": "fas fa-mobile-alt"},
+        {"name": "bKash / Nagad", "icon": "fas fa-wallet"},
+        {"name": "Clothing & Tailoring", "icon": "fas fa-tshirt"},
+        {"name": "Personal Care", "icon": "fas fa-cut"},
+        {"name": "Medical & Pharmacy", "icon": "fas fa-medkit"},
+        {"name": "Fitness & Gym", "icon": "fas fa-dumbbell"},
+        {"name": "Entertainment & Movies", "icon": "fas fa-film"},
+        {"name": "Gadgets & Electronics", "icon": "fas fa-laptop"},
+        {"name": "Home Maintenance", "icon": "fas fa-tools"},
+        {"name": "Charity & Donation", "icon": "fas fa-hand-holding-heart"},
+        {"name": "Family & Friends", "icon": "fas fa-users"},
+        {"name": "Pet Care", "icon": "fas fa-paw"},
+        {"name": "Miscellaneous", "icon": "fas fa-box"},
+        {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
+    ]
+
+    icon_dict = {cat["name"]: cat["icon"] for cat in expense_categories}
+
     budgets = Budget.objects.filter(
         user=request.user, month=current_month, year=current_year
     )
@@ -364,6 +395,8 @@ def budget_view(request):
         total_budget_amount += budget_amount_decimal
         total_spent_amount += spent_decimal
 
+        cat_icon = icon_dict.get(str(b.category), "fas fa-wallet")
+
         budget_data.append({
             'budget': b,
             'spent': spent_decimal,
@@ -371,6 +404,7 @@ def budget_view(request):
             'percentage': min(percentage, 100),
             'rem_percentage': rem_percentage,
             'is_exceeded': spent_decimal > budget_amount_decimal,
+            'icon': cat_icon,
         })
 
     if request.method == 'POST':
@@ -390,38 +424,6 @@ def budget_view(request):
         form = BudgetForm(initial={'month': current_month, 'year': current_year})
 
     all_categories = [cat[0] for cat in CATEGORY_CHOICES]
-
-    expense_categories = [
-        {"name": "Tuition & Fees", "icon": "fas fa-graduation-cap"},
-        {"name": "Books & Notes", "icon": "fas fa-book"},
-        {"name": "Stationery", "icon": "fas fa-pen"},
-        {"name": "Courses & Training", "icon": "fas fa-laptop-code"},
-        {"name": "Mess / Hall Bill", "icon": "fas fa-utensils"},
-        {"name": "Restaurants & Fast Food", "icon": "fas fa-hamburger"},
-        {"name": "Tea & Snacks", "icon": "fas fa-coffee"},
-        {"name": "Groceries", "icon": "fas fa-shopping-basket"},
-        {"name": "Bus / Local Transport", "icon": "fas fa-bus"},
-        {"name": "Rickshaw & CNG", "icon": "fas fa-shuttle-van"},
-        {"name": "Bike Fuel / Maintenance", "icon": "fas fa-motorcycle"},
-        {"name": "Tour & Travel", "icon": "fas fa-plane"},
-        {"name": "Rent / Room Rent", "icon": "fas fa-home"},
-        {"name": "Electricity & Gas", "icon": "fas fa-bolt"},
-        {"name": "Internet & WiFi", "icon": "fas fa-wifi"},
-        {"name": "Mobile Recharge", "icon": "fas fa-mobile-alt"},
-        {"name": "bKash / Nagad", "icon": "fas fa-wallet"},
-        {"name": "Clothing & Tailoring", "icon": "fas fa-tshirt"},
-        {"name": "Personal Care", "icon": "fas fa-cut"},
-        {"name": "Medical & Pharmacy", "icon": "fas fa-medkit"},
-        {"name": "Fitness & Gym", "icon": "fas fa-dumbbell"},
-        {"name": "Entertainment & Movies", "icon": "fas fa-film"},
-        {"name": "Gadgets & Electronics", "icon": "fas fa-laptop"},
-        {"name": "Home Maintenance", "icon": "fas fa-tools"},
-        {"name": "Charity & Donation", "icon": "fas fa-hand-holding-heart"},
-        {"name": "Family & Friends", "icon": "fas fa-users"},
-        {"name": "Pet Care", "icon": "fas fa-paw"},
-        {"name": "Miscellaneous", "icon": "fas fa-box"},
-        {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
-    ]
 
     context = {
         'budget_data': budget_data,
