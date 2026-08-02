@@ -86,16 +86,16 @@
                 </span>
             </div>
 
-            <!-- Radially Positioned Icons with 3-Second Name Pop on Touch/Click -->
+            <!-- Radially Positioned Icons with Correct FontAwesome Classes and 3-Second Name Pop -->
             {% for cat in categories %}
             <div class="absolute z-20"
                  style="top: {{ cat.top }}%; left: {{ cat.left }}%; transform: translate(-50%, -50%);">
                 
                 <div class="flex flex-col items-center relative" style="transform: rotate({{ cat.angle }}deg);">
                     
-                    <!-- Icon Badge (Clickable to show category name for 3 seconds) -->
+                    <!-- Icon Badge with explicit fas and cat.icon -->
                     <div onclick="toggleCategoryLabel(this)" class="w-8 h-8 bg-white dark:bg-gray-900 border-2 rounded-full flex items-center justify-center shadow-md text-xs cursor-pointer select-none transition transform hover:scale-110" style="border-color: {{ cat.color }}; color: {{ cat.color }};">
-                        <i class="{{ cat.icon }}"></i>
+                        <i class="fas {{ cat.icon }} pointer-events-none"></i>
                     </div>
                     
                     <!-- Pointer Line -->
@@ -106,7 +106,7 @@
                         {{ cat.percentage }}%
                     </span>
 
-                    <!-- Category Name Pop Label (Hidden by default, shown for 3s on touch) -->
+                    <!-- Category Name Pop Label (Shown for 3s on touch) -->
                     <div class="category-popup-label hidden absolute top-0 left-10 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none" style="transform: rotate(-{{ cat.angle }}deg);">
                         {{ cat.name }} ({{ cat.percentage }}%)
                     </div>
@@ -141,7 +141,7 @@
         <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-16">
             {% for cat in expense_categories %}
             <button type="button" data-id="{{ cat.name }}" onclick="selectCategory('{{ cat.name }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
-                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
+                <i class="fas {{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
                 <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
             </button>
             {% endfor %}
@@ -151,7 +151,7 @@
         <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-16 hidden">
             {% for cat in income_categories %}
             <button type="button" data-id="{{ cat.name }}" onclick="selectCategory('{{ cat.name }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
-                <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
+                <i class="fas {{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
                 <span class="text-[11px] font-semibold text-gray-700 dark:text-gray-300 text-center truncate w-full pointer-events-none">{{ cat.name }}</span>
             </button>
             {% endfor %}
