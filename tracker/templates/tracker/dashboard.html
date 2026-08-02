@@ -71,6 +71,12 @@
 
     <!-- EXACT MONEYFY STYLE PIE CHART & RADIAL ICONS SECTION -->
     <div class="flex-grow flex flex-col items-center justify-center relative my-8 py-6 z-10">
+        
+        <!-- Fixed Display Box for Category Name on Tap (Marked Area) -->
+        <div id="fixedCategoryDisplay" class="mb-4 h-8 px-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-md flex items-center justify-center transition-all duration-300 opacity-0 scale-95">
+            <span id="fixedCategoryText" class="text-xs font-bold text-gray-800 dark:text-gray-200" data-en="Select a category" data-bn="ক্যাটাগরি সিলেক্ট করুন">ক্যাটাগরি সিলেক্ট করুন</span>
+        </div>
+
         <div class="relative w-[260px] h-[260px] flex items-center justify-center">
             
             <!-- Accurate Dynamic Conic Gradient Pie Chart Slices -->
@@ -86,15 +92,15 @@
                 </span>
             </div>
 
-            <!-- Radially Positioned Icons with Correct FontAwesome Classes and 3-Second Name Pop -->
+            <!-- Radially Positioned Icons with Correct FontAwesome Classes -->
             {% for cat in categories %}
             <div class="absolute z-20"
                  style="top: {{ cat.top }}%; left: {{ cat.left }}%; transform: translate(-50%, -50%);">
                 
                 <div class="flex flex-col items-center relative" style="transform: rotate({{ cat.angle }}deg);">
                     
-                    <!-- Icon Badge with explicit fas and cat.icon -->
-                    <div onclick="toggleCategoryLabel(this)" class="w-8 h-8 bg-white dark:bg-gray-900 border-2 rounded-full flex items-center justify-center shadow-md text-xs cursor-pointer select-none transition transform hover:scale-110" style="border-color: {{ cat.color }}; color: {{ cat.color }};">
+                    <!-- Icon Badge with click event to show details in fixed area -->
+                    <div onclick="showCategoryDetails('{{ cat.name }}', '{{ cat.total|floatformat:0 }}', '{{ cat.percentage }}')" class="w-8 h-8 bg-white dark:bg-gray-900 border-2 rounded-full flex items-center justify-center shadow-md text-xs cursor-pointer select-none transition transform hover:scale-110" style="border-color: {{ cat.color }}; color: {{ cat.color }};">
                         <i class="fas {{ cat.icon }} pointer-events-none"></i>
                     </div>
                     
@@ -105,11 +111,6 @@
                     <span class="text-[9px] font-extrabold text-gray-700 dark:text-gray-200 bg-white/95 dark:bg-gray-900/95 px-1 rounded shadow-sm mt-0.5 whitespace-nowrap" style="transform: rotate(-{{ cat.angle }}deg);">
                         {{ cat.percentage }}%
                     </span>
-
-                    <!-- Category Name Pop Label (Shown for 3s on touch) -->
-                    <div class="category-popup-label hidden absolute top-0 left-10 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none" style="transform: rotate(-{{ cat.angle }}deg);">
-                        {{ cat.name }} ({{ cat.percentage }}%)
-                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -197,20 +198,30 @@
 <script>
     let currentTxType = 'expense';
     let selectedCatNameText = "";
+    let categoryTimeout;
 
-    // Toggle category label popup for 3 seconds on icon touch/click
-    function toggleCategoryLabel(el) {
-        const popup = el.parentElement.querySelector('.category-popup-label');
-        if (!popup) return;
-
-        // Hide any other open popups first
-        document.querySelectorAll('.category-popup-label').forEach(p => p.classList.add('hidden'));
-
-        popup.classList.remove('hidden');
+    // Show category details in the fixed marked area for 3 seconds
+    function showCategoryDetails(catName, catTotal, catPercentage) {
+        const displayBox = document.getElementById('fixedCategoryDisplay');
+        const displayText = document.getElementById('fixedCategoryText');
         
-        // Auto hide after 3 seconds
-        setTimeout(() => {
-            popup.classList.add('hidden');
+        const lang = localStorage.getItem('app_language') || 'bn';
+        if (lang === 'bn') {
+            displayText.innerText = `${catName}: ${catTotal} টাকা (${catPercentage}%)`;
+        } else {
+            displayText.innerText = `${catName}: ${catTotal} Taka (${catPercentage}%)`;
+        }
+
+        displayBox.classList.remove('opacity-0', 'scale-95');
+        displayBox.classList.add('opacity-100', 'scale-100');
+
+        if (categoryTimeout) {
+            clearTimeout(categoryTimeout);
+        }
+
+        categoryTimeout = setTimeout(() => {
+            displayBox.classList.remove('opacity-100', 'scale-100');
+            displayBox.classList.add('opacity-0', 'scale-95');
         }, 3000);
     }
 
@@ -279,7 +290,6 @@
     document.addEventListener("DOMContentLoaded", function () {
         applyAppLanguage();
 
-        // Fix mobile double-tap issue for plus/minus buttons using touchstart
         const expenseBtn = document.getElementById('expenseBtn');
         const incomeBtn = document.getElementById('incomeBtn');
 
