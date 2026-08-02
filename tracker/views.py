@@ -258,12 +258,45 @@ def calendar_view(request):
             'height_percentage': height_pct,
         })
 
+    # --- Month-to-Month Comparison Calculations ---
+    current_month_total = sum(
+        t.amount for t in transactions if t.transaction_type == 'expense'
+    )
+
+    # Calculate previous month and year
+    if current_month == 1:
+        prev_month = 12
+        prev_year = current_year - 1
+    else:
+        prev_month = current_month - 1
+        prev_year = current_year
+
+    prev_transactions = Transaction.objects.filter(
+        user=request.user, date__year=prev_year, date__month=prev_month, transaction_type='expense'
+    )
+    prev_month_total = sum(t.amount for t in prev_transactions)
+
+    mom_percentage = 0
+    mom_is_increase = False
+
+    if prev_month_total > 0:
+        diff = current_month_total - prev_month_total
+        mom_percentage = abs(float((diff / prev_month_total) * 100))
+        mom_is_increase = diff > 0
+    elif current_month_total > 0:
+        mom_percentage = 100.0
+        mom_is_increase = True
+
     context = {
         'calendar_days': calendar_days,
         'current_month': current_month,
         'current_year': current_year,
         'month_name': calendar.month_name[current_month],
         'last_7_days': last_7_days,
+        'current_month_total': current_month_total,
+        'prev_month_total': prev_month_total,
+        'mom_percentage': mom_percentage,
+        'mom_is_increase': mom_is_increase,
     }
     return render(request, 'tracker/calendar.html', context)
 

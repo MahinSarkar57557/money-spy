@@ -90,5 +90,36 @@
         </div>
     </div>
 
+    <!-- MONTH-TO-MONTH COMPARISON SECTION -->
+    <div class="bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 rounded-2xl p-3.5 shadow-xs flex flex-col gap-2.5">
+        <div class="flex justify-between items-center">
+            <span class="text-[11px] font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1">
+                <i class="fas fa-chart-line text-indigo-600"></i> 
+                <span data-bn="মাসিক খরচের তুলনা" data-en="Month-to-Month Comparison">মাসিক খরচের তুলনা</span>
+            </span>
+            <span class="text-[10px] text-gray-400 font-medium" data-bn="গত মাসের তুলনায়" data-en="vs Last Month">গত মাসের তুলনায়</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+            <div class="bg-white dark:bg-gray-900/50 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700/50 flex flex-col">
+                <span class="text-[9.5px] text-gray-400" data-bn="গত মাস" data-en="Last Month">গত মাস</span>
+                <span class="text-xs font-bold text-gray-800 dark:text-white mt-0.5">৳{{ prev_month_total|floatformat:0|default:"0" }}</span>
+            </div>
+            <div class="bg-white dark:bg-gray-900/50 p-2.5 rounded-xl border border-gray-100 dark:border-gray-700/50 flex flex-col">
+                <span class="text-[9.5px] text-gray-400" data-bn="চলতি মাস" data-en="This Month">চলতি মাস</span>
+                <span class="text-xs font-bold text-gray-800 dark:text-white mt-0.5">৳{{ current_month_total|floatformat:0|default:"0" }}</span>
+            </div>
+        </div>
+
+        <!-- Percentage Change Badge -->
+        <div class="flex items-center justify-between bg-white dark:bg-gray-900/50 px-3 py-2 rounded-xl border border-gray-100 dark:border-gray-700/50">
+            <span class="text-[10px] font-semibold text-gray-600 dark:text-gray-300" data-bn="পরিবর্তন" data-en="Difference">পরিবর্তন</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md {% if mom_is_increase %} bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 {% else %} bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 {% endif %}">
+                {% if mom_is_increase %}+{% endif %}{{ mom_percentage|floatformat:1 }}% 
+                <span class="font-normal">({% if mom_is_increase %}<span data-bn="বৃদ্ধি" data-en="Increased">বৃদ্ধি</span>{% else %}<span data-bn="হ্রাস" data-en="Decreased">হ্রাস</span>{% endif %})</span>
+            </span>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
