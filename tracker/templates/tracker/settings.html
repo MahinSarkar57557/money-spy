@@ -87,6 +87,7 @@
 
 </div>
 
+
 <!-- Settings Specific JavaScript -->
 <script>
     // Dark Mode Sync
@@ -108,25 +109,19 @@
     });
 
     // Language Selector & Dynamic Text Translation Function
-    function applySettingsLanguage(lang) {
-        document.querySelectorAll('[data-bn]').forEach(el => {
-            if (lang === 'en') {
-                el.innerText = el.getAttribute('data-en');
-            } else {
-                el.innerText = el.getAttribute('data-bn');
-            }
-        });
-    }
-
     const langSelect = document.getElementById('langSelect');
     const currentLang = localStorage.getItem('language') || 'bn';
     langSelect.value = currentLang;
-    applySettingsLanguage(currentLang);
 
     langSelect.addEventListener('change', function() {
         const selectedLang = this.value;
         localStorage.setItem('language', selectedLang);
-        applySettingsLanguage(selectedLang);
+        
+        // Call global translation function from base.html instantly
+        if (typeof applyGlobalTranslation === 'function') {
+            applyGlobalTranslation(selectedLang);
+        } else {
+            location.reload(); // Fallback reload if needed
+        }
     });
 </script>
-{% endblock %}

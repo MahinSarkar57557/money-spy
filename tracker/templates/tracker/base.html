@@ -31,14 +31,12 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* মডাল ওপেন থাকলে ব্যাকগ্রাউন্ড স্ক্রল লক করার জন্য */
         body.modal-open {
             overflow: hidden !important;
             position: fixed;
             width: 100%;
         }
 
-        /* ডার্ক মোডে টেক্সট ও ফর্ম ফিল্ড ঠিক করার জন্য */
         .dark-mode, .dark-mode body {
             color: #f3f4f6 !important;
         }
@@ -48,7 +46,6 @@
             border-color: #374151 !important;
         }
 
-        /* তারিখের (Date) বক্স বাইরে চলে যাওয়া রোধ করতে */
         input[type="date"], .date-input-field {
             width: 100% !important;
             max-width: 100% !important;
@@ -98,6 +95,7 @@
     <!-- Global Translation Script -->
     <script>
         function applyGlobalTranslation(lang) {
+            document.documentElement.lang = lang;
             document.querySelectorAll('[data-bn]').forEach(el => {
                 if (lang === 'en') {
                     if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-en')) {
@@ -116,8 +114,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const savedLang = localStorage.getItem('app_language') || 'bn';
-            document.documentElement.lang = savedLang;
+            const savedLang = localStorage.getItem('language') || 'bn';
             applyGlobalTranslation(savedLang);
         });
     </script>
