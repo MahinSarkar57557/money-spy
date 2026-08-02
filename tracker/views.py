@@ -2,6 +2,10 @@ import calendar
 from datetime import date, datetime
 from decimal import Decimal
 import math
+import io
+from django.http import FileResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
@@ -263,7 +267,6 @@ def calendar_view(request):
         t.amount for t in transactions if t.transaction_type == 'expense'
     )
 
-    # Calculate previous month and year
     if current_month == 1:
         prev_month = 12
         prev_year = current_year - 1
@@ -491,6 +494,78 @@ def edit_budget(request, pk):
         'budget_item': budget_item,
     }
     return render(request, 'tracker/edit_budget.html', context)
+
+
+@login_required(login_url='login')
+def download_monthly_pdf(request):
+    today = timezone.localdate()
+    current_month = int(request.GET.get('month', today.month))
+    current_year = int(request.GET.get('year', today.year))
+
+    transactions = Transaction.objects.filter(
+        user=request.user, 
+        date__year=current_year, 
+        date__month=current_month
+    ).order_by('date')
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(50, height - 50, f"Money Spy - Expense & Income Report")
+    
+    p.setFont("Helvetica", 10)
+    p.drawString(50, height - 70, f"Month: {calendar.month_name[current_month]} {current_year}")
+    p.drawString(50, height - 85, f"Generated for: {request.user.username}")
+
+    y = height - 120
+    p.setFont("Helvetica-Bold", 10)
+    p.drawString(50, y, "Date")
+    p.drawString(130, y, "Type")
+    p.drawString(200, y, "Category")
+    p.drawString(350, y, "Amount (BDT)")
+    p.drawString(430, y, "Description")
+
+    p.line(50, y - 5, 550, y - 5)
+    y -= 20
+
+    p.setFont("Helvetica", 9)
+    total_inc = 0
+    total_exp = 0
+
+    for t in transactions:
+        if y < 50:
+            p.showPage()
+            y = height - 50
+        
+        p.drawString(50, y, str(t.date))
+        p.drawString(130, y, t.transaction_type.capitalize())
+        p.drawString(200, y, str(t.category)[:25])
+        p.drawString(350, y, f"৳{t.amount}")
+        p.drawString(430, y, str(t.description)[:20] if t.description else "-")
+
+        if t.transaction_type == 'income':
+            total_inc += t.amount
+        else:
+            total_exp += t.amount
+
+        y -= 18
+
+    y -= 10
+    p.line(50, y, 550, y)
+    y -= 20
+    p.setFont("Helvetica-Bold", 10)
+    p.drawString(50, y, f"Total Income: ৳{total_inc}")
+    p.drawString(200, y, f"Total Expense: ৳{total_exp}")
+    p.drawString(380, y, f"Net Balance: ৳{total_inc - total_exp}")
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    
+    filename = f"MoneySpy_Report_{current_month}_{current_year}.pdf"
+    return FileResponse(buffer, as_attachment=True, filename=filename)
 
 
 @login_required(login_url='login')

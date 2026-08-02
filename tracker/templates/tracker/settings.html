@@ -52,6 +52,20 @@
             </label>
         </div>
 
+        <!-- PDF Report Download Option -->
+        <a href="{% url 'download_pdf' %}" class="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700/70 transition cursor-pointer">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-sm">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-gray-800 dark:text-white" id="pdfHeading" data-bn="মাসিক রিপোর্ট ডাউনলোড (PDF)" data-en="Download Monthly Report (PDF)">মাসিক রিপোর্ট ডাউনলোড (PDF)</h4>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400" id="pdfDesc" data-bn="চলতি মাসের আয় ও ব্যয়ের হিসাব" data-en="Current month income & expense record">চলতি মাসের আয় ও ব্যয়ের হিসাব</p>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+        </a>
+
         <!-- Logout Option -->
         <form action="{% url 'logout' %}" method="POST" class="w-full">
             {% csrf_token %}

@@ -11,6 +11,9 @@ urlpatterns = [
     path('budget/edit/<int:pk>/', views.edit_budget, name='edit_budget'),
     path('clear-today/', views.clear_today_transactions, name='clear_today_transactions'),
     
+    # মাসিক পিডিএফ রিপোর্ট ডাউনলোডের পাথ
+    path('download-pdf/', views.download_monthly_pdf, name='download_pdf'),
+    
     # নতুন অ্যাকাউন্ট তৈরির (Signup) পাথ
     path('signup/', views.signup_view, name='signup'),
     

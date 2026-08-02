@@ -130,4 +130,4 @@ LOGOUT_REDIRECT_URL = 'login'
 # --- ১ বছরের জন্য পার্মানেন্ট সেশন সেটিংস ---
 SESSION_COOKIE_AGE = 31536000  # ১ বছর (সেকেন্ডে হিসাব)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # ব্রাউজার বন্ধ করলেও লগআউট হবে না
-SESSION_SAVE_EVERY_REQUEST = True  # প্রতি রিকোয়েস্টে সেশন আপডেট হবে
+SESSION_SAVE_EVERY_REQUEST = True  # প্রতি রিকোয়েস্টে সেশন আপডেট হবে
