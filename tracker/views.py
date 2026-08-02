@@ -107,6 +107,9 @@ def dashboard_view(request):
         {"name": "Pocket Money", "icon": "fas fa-hand-holding-usd"},
     ]
 
+    # ক্যাটাগরি অনুযায়ী আইকনের একটি ডিকশনারি তৈরি করে নেওয়া সুবিধাজনক
+    icon_dict = {cat["name"]: cat["icon"] for cat in expense_categories}
+
     active_categories = []
     for cat in expense_categories:
         cat_name = cat["name"]
@@ -126,6 +129,7 @@ def dashboard_view(request):
                 'name': cat_name,
                 'percentage': percentage,
                 'total': cat_total,
+                'icon': cat["icon"], # আইকন এখানে যুক্ত করা হলো
             })
 
     processed_categories = []
@@ -163,6 +167,7 @@ def dashboard_view(request):
             'name': cat['name'],
             'percentage': cat['percentage'],
             'total': cat['total'],
+            'icon': cat['icon'], # পাই চার্টে রেন্ডার হওয়ার জন্য আইকন পাস করা হলো
             'color': cat_color,
             'top': round(top_pos, 2),
             'left': round(left_pos, 2),
@@ -386,7 +391,6 @@ def budget_view(request):
 
     all_categories = [cat[0] for cat in CATEGORY_CHOICES]
 
-    # খরচের ২৯টি ক্যাটাগরি এবং সেগুলোর আইকন (যা ড্যাশবোর্ডে ব্যবহার করা হয়েছে)
     expense_categories = [
         {"name": "Tuition & Fees", "icon": "fas fa-graduation-cap"},
         {"name": "Books & Notes", "icon": "fas fa-book"},
@@ -428,7 +432,7 @@ def budget_view(request):
         'total_spent_amount': total_spent_amount,
         'month_name': calendar.month_name[current_month],
         'all_categories': all_categories,
-        'expense_categories': expense_categories,  # এটি যুক্ত করা হয়েছে
+        'expense_categories': expense_categories,
     }
     return render(request, 'tracker/budget.html', context)
 
