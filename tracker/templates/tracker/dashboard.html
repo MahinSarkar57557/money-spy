@@ -112,12 +112,12 @@
     </div>
 
     <!-- Floating Action Buttons (Expense [-] and Income [+]) -->
-    <div class="flex justify-center items-center space-x-8 mt-8 mb-4 relative z-10">
-        <button onclick="openModal('expense')" class="w-16 h-16 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-xl transition transform hover:scale-105 cursor-pointer">
-            <i class="fas fa-minus text-xl"></i>
+    <div class="flex justify-center items-center space-x-8 mt-8 mb-4 relative z-20">
+        <button id="expenseBtn" class="w-16 h-16 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-xl transition transform hover:scale-105 cursor-pointer">
+            <i class="fas fa-minus text-xl pointer-events-none"></i>
         </button>
-        <button onclick="openModal('income')" class="w-16 h-16 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transition transform hover:scale-105 cursor-pointer">
-            <i class="fas fa-plus text-xl"></i>
+        <button id="incomeBtn" class="w-16 h-16 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transition transform hover:scale-105 cursor-pointer">
+            <i class="fas fa-plus text-xl pointer-events-none"></i>
         </button>
     </div>
 
@@ -257,6 +257,30 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         applyAppLanguage();
+
+        // Fix mobile double-tap issue for plus/minus buttons using touchstart
+        const expenseBtn = document.getElementById('expenseBtn');
+        const incomeBtn = document.getElementById('incomeBtn');
+
+        if (expenseBtn) {
+            expenseBtn.addEventListener('touchstart', function (e) {
+                e.preventDefault();
+                openModal('expense');
+            }, { passive: false });
+            expenseBtn.addEventListener('click', function () {
+                openModal('expense');
+            });
+        }
+
+        if (incomeBtn) {
+            incomeBtn.addEventListener('touchstart', function (e) {
+                e.preventDefault();
+                openModal('income');
+            }, { passive: false });
+            incomeBtn.addEventListener('click', function () {
+                openModal('income');
+            });
+        }
 
         const expenseList = document.getElementById('expenseCategoryList');
         if (expenseList) {
