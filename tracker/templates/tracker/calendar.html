@@ -6,7 +6,8 @@
     <!-- Header: Month Selector -->
     <div class="flex justify-between items-center">
         <h2 class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1">
-            <i class="fas fa-calendar-alt text-emerald-600"></i> <span data-translate="calendar_title">মাসিক ক্যালেন্ডার</span>
+            <i class="fas fa-calendar-alt text-emerald-600"></i> 
+            <span data-bn="মাসিক ক্যালেন্ডার" data-en="Monthly Calendar">মাসিক ক্যালেন্ডার</span>
         </h2>
         <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full shadow-xs">
             <a href="?month={% if current_month == 1 %}12{% else %}{{ current_month|add:'-1' }}{% endif %}&year={% if current_month == 1 %}{{ current_year|add:'-1' }}{% else %}{{ current_year }}{% endif %}" class="text-gray-600 dark:text-gray-300 hover:text-emerald-600">
@@ -20,15 +21,15 @@
         <div class="w-4"></div>
     </div>
 
-    <!-- Calendar Grid Header (Days of week with translation attributes) -->
+    <!-- Calendar Grid Header (Days of week) -->
     <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-400">
-        <span data-translate="day_mon">সোম</span>
-        <span data-translate="day_tue">মঙ্গল</span>
-        <span data-translate="day_wed">বুধ</span>
-        <span data-translate="day_thu">বৃহস্পতি</span>
-        <span data-translate="day_fri">শুক্র</span>
-        <span data-translate="day_sat">শনি</span>
-        <span data-translate="day_sun">রবি</span>
+        <span data-bn="সোম" data-en="Mon">সোম</span>
+        <span data-bn="মঙ্গল" data-en="Tue">মঙ্গল</span>
+        <span data-bn="বুধ" data-en="Wed">বুধ</span>
+        <span data-bn="বৃহস্পতি" data-en="Thu">বৃহস্পতি</span>
+        <span data-bn="শুক্র" data-en="Fri">শুক্র</span>
+        <span data-bn="শনি" data-en="Sat">শনি</span>
+        <span data-bn="রবি" data-en="Sun">রবি</span>
     </div>
 
     <!-- Calendar Days Grid -->
@@ -61,9 +62,10 @@
     <div class="bg-gray-50/80 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800 rounded-2xl p-3 shadow-xs">
         <div class="flex justify-between items-center mb-1.5">
             <span class="text-[11px] font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1">
-                <i class="fas fa-chart-bar text-emerald-600"></i> <span data-translate="recent_expense">গত ৭ দিনের খরচ</span>
+                <i class="fas fa-chart-bar text-emerald-600"></i> 
+                <span data-bn="গত ৭ দিনের খরচ" data-en="Last 7 Days Expense">গত ৭ দিনের খরচ</span>
             </span>
-            <span class="text-[10px] text-gray-400 font-medium" data-translate="daily_trend">Daily Trend</span>
+            <span class="text-[10px] text-gray-400 font-medium">Daily Trend</span>
         </div>
         
         <!-- Bar Graph Container -->
@@ -81,7 +83,7 @@
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="w-full flex items-center justify-center text-[10px] text-gray-400 h-full">
+                <div class="w-full flex items-center justify-center text-[10px] text-gray-400 h-full" data-bn="কোনো ডাটা পাওয়া যায়নি" data-en="No data found">
                     কোনো ডাটা পাওয়া যায়নি
                 </div>
             {% endif %}
@@ -89,37 +91,4 @@
     </div>
 
 </div>
-
-<!-- Global Translation Addition for Calendar Page -->
-<script>
-    if (typeof globalTranslations !== 'undefined') {
-        globalTranslations.bn.calendar_title = "মাসিক ক্যালেন্ডার";
-        globalTranslations.bn.recent_expense = "গত ৭ দিনের খরচ";
-        globalTranslations.bn.daily_trend = "Daily Trend";
-        globalTranslations.bn.day_mon = "সোম";
-        globalTranslations.bn.day_tue = "মঙ্গল";
-        globalTranslations.bn.day_wed = "বুধ";
-        globalTranslations.bn.day_thu = "বৃহস্পতি";
-        globalTranslations.bn.day_fri = "শুক্র";
-        globalTranslations.bn.day_sat = "শনি";
-        globalTranslations.bn.day_sun = "রবি";
-
-        globalTranslations.en.calendar_title = "Monthly Calendar";
-        globalTranslations.en.recent_expense = "Last 7 Days Expense";
-        globalTranslations.en.daily_trend = "Daily Trend";
-        globalTranslations.en.day_mon = "Mon";
-        globalTranslations.en.day_tue = "Tue";
-        globalTranslations.en.day_wed = "Wed";
-        globalTranslations.en.day_thu = "Thu";
-        globalTranslations.en.day_fri = "Fri";
-        globalTranslations.en.day_sat = "Sat";
-        globalTranslations.en.day_sun = "Sun";
-
-        // Re-apply translation immediately
-        const currentLang = localStorage.getItem('language') || 'bn';
-        if (typeof applyGlobalTranslation === 'function') {
-            applyGlobalTranslation(currentLang);
-        }
-    }
-</script>
 {% endblock %}
