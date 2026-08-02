@@ -71,7 +71,7 @@
 
     </div>
 
-    <!-- App Info & Branding Card (As requested: Name, Version, Developer unchanged) -->
+    <!-- App Info & Branding Card -->
     <div class="bg-gradient-to-r from-indigo-900 via-indigo-950 to-gray-900 border border-indigo-500/20 rounded-2xl p-4 text-center mt-2 shadow-lg relative overflow-hidden flex flex-col items-center gap-1">
         <div class="absolute -right-6 -top-6 w-20 h-20 bg-indigo-500/20 rounded-full blur-xl"></div>
         <h4 class="text-xs font-bold text-indigo-100 tracking-wide">Money Spy</h4>
@@ -86,7 +86,6 @@
     </div>
 
 </div>
-
 
 <!-- Settings Specific JavaScript -->
 <script>
@@ -117,11 +116,11 @@
         const selectedLang = this.value;
         localStorage.setItem('language', selectedLang);
         
-        // Call global translation function from base.html instantly
         if (typeof applyGlobalTranslation === 'function') {
             applyGlobalTranslation(selectedLang);
         } else {
-            location.reload(); // Fallback reload if needed
+            location.reload();
         }
     });
 </script>
+{% endblock %}
