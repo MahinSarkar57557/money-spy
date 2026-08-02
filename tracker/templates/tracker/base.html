@@ -94,8 +94,34 @@
 
     <!-- Global Translation Script -->
     <script>
+        const globalTranslations = {
+            bn: {
+                nav_home: "হোম",
+                nav_calendar: "ক্যালেন্ডার",
+                nav_budget: "বাজেট",
+                nav_settings: "সেটিংস"
+            },
+            en: {
+                nav_home: "Home",
+                nav_calendar: "Calendar",
+                nav_budget: "Budget",
+                nav_settings: "Settings"
+            }
+        };
+
         function applyGlobalTranslation(lang) {
             document.documentElement.lang = lang;
+            
+            // 1. Handle data-translate attributes
+            const translateElements = document.querySelectorAll('[data-translate]');
+            translateElements.forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (globalTranslations[lang] && globalTranslations[lang][key]) {
+                    el.textContent = globalTranslations[lang][key];
+                }
+            });
+
+            // 2. Handle data-bn and data-en attributes
             document.querySelectorAll('[data-bn]').forEach(el => {
                 if (lang === 'en') {
                     if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-en')) {

@@ -66,7 +66,7 @@
             <span class="text-[10px] text-gray-400 font-medium" data-translate="daily_trend">Daily Trend</span>
         </div>
         
-        <!-- Bar Graph Container (Height increased to h-32) -->
+        <!-- Bar Graph Container -->
         <div class="flex justify-between items-end h-32 pt-5 px-1 gap-1.5">
             {% if last_7_days %}
                 {% for day_data in last_7_days %}
@@ -90,7 +90,7 @@
 
 </div>
 
-<!-- Global Translation Addition for Calendar Days -->
+<!-- Global Translation Addition for Calendar Page -->
 <script>
     if (typeof globalTranslations !== 'undefined') {
         globalTranslations.bn.calendar_title = "মাসিক ক্যালেন্ডার";
@@ -115,7 +115,7 @@
         globalTranslations.en.day_sat = "Sat";
         globalTranslations.en.day_sun = "Sun";
 
-        // Re-apply translation immediately in case language is English
+        // Re-apply translation immediately
         const currentLang = localStorage.getItem('language') || 'bn';
         if (typeof applyGlobalTranslation === 'function') {
             applyGlobalTranslation(currentLang);
