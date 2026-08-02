@@ -86,16 +86,16 @@
                 </span>
             </div>
 
-            <!-- Radially Positioned Icons -->
+            <!-- Radially Positioned Icons with 3-Second Name Pop on Touch/Click -->
             {% for cat in categories %}
             <div class="absolute z-20"
                  style="top: {{ cat.top }}%; left: {{ cat.left }}%; transform: translate(-50%, -50%);">
                 
-                <div class="flex flex-col items-center" style="transform: rotate({{ cat.angle }}deg);">
+                <div class="flex flex-col items-center relative" style="transform: rotate({{ cat.angle }}deg);">
                     
-                    <!-- Icon Badge -->
-                    <div class="w-8 h-8 bg-white dark:bg-gray-900 border-2 rounded-full flex items-center justify-center shadow-md text-xs" style="border-color: {{ cat.color }}; color: {{ cat.color }};">
-                        <i class="fas fa-tag"></i>
+                    <!-- Icon Badge (Clickable to show category name for 3 seconds) -->
+                    <div onclick="toggleCategoryLabel(this)" class="w-8 h-8 bg-white dark:bg-gray-900 border-2 rounded-full flex items-center justify-center shadow-md text-xs cursor-pointer select-none transition transform hover:scale-110" style="border-color: {{ cat.color }}; color: {{ cat.color }};">
+                        <i class="{{ cat.icon }}"></i>
                     </div>
                     
                     <!-- Pointer Line -->
@@ -105,6 +105,11 @@
                     <span class="text-[9px] font-extrabold text-gray-700 dark:text-gray-200 bg-white/95 dark:bg-gray-900/95 px-1 rounded shadow-sm mt-0.5 whitespace-nowrap" style="transform: rotate(-{{ cat.angle }}deg);">
                         {{ cat.percentage }}%
                     </span>
+
+                    <!-- Category Name Pop Label (Hidden by default, shown for 3s on touch) -->
+                    <div class="category-popup-label hidden absolute top-0 left-10 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none" style="transform: rotate(-{{ cat.angle }}deg);">
+                        {{ cat.name }} ({{ cat.percentage }}%)
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -124,8 +129,8 @@
 </div>
 
 <!-- TRANSACTION CATEGORY SELECTION MODAL -->
-<div id="transactionModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end sm:items-center justify-center transition-opacity p-2 sm:p-4">
-    <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl h-[75vh] flex flex-col">
+<div id="transactionModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-end justify-center transition-opacity p-0 sm:p-4">
+    <div class="bg-white dark:bg-gray-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl h-[85vh] flex flex-col">
         <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-800 pb-2 flex-shrink-0">
             <h3 id="modalTitle" class="text-sm font-bold text-gray-800 dark:text-gray-100" data-en="Select Category" data-bn="ক্যাটাগরি সিলেক্ট করুন">ক্যাটাগরি সিলেক্ট করুন</h3>
             <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg font-bold cursor-pointer">&times;</button>
@@ -133,7 +138,7 @@
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 text-center flex-shrink-0" data-en="Select a category" data-bn="একটি ক্যাটাগরি সিলেক্ট করুন">একটি ক্যাটাগরি সিলেক্ট করুন</p>
         
         <!-- Expense Categories Container -->
-        <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6">
+        <div id="expenseCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-16">
             {% for cat in expense_categories %}
             <button type="button" data-id="{{ cat.name }}" onclick="selectCategory('{{ cat.name }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
                 <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
@@ -143,7 +148,7 @@
         </div>
 
         <!-- Income Categories Container -->
-        <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-6 hidden">
+        <div id="incomeCategoryList" class="grid grid-cols-3 gap-2.5 overflow-y-auto p-1 flex-grow pb-16 hidden">
             {% for cat in income_categories %}
             <button type="button" data-id="{{ cat.name }}" onclick="selectCategory('{{ cat.name }}', '{{ cat.name }}')" class="category-item flex flex-col items-center justify-center p-2.5 bg-gray-50 dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700 hover:border-emerald-300 rounded-2xl transition cursor-pointer select-none">
                 <i class="{{ cat.icon }} text-lg text-emerald-600 dark:text-emerald-400 mb-1.5 pointer-events-none"></i>
@@ -192,6 +197,22 @@
 <script>
     let currentTxType = 'expense';
     let selectedCatNameText = "";
+
+    // Toggle category label popup for 3 seconds on icon touch/click
+    function toggleCategoryLabel(el) {
+        const popup = el.parentElement.querySelector('.category-popup-label');
+        if (!popup) return;
+
+        // Hide any other open popups first
+        document.querySelectorAll('.category-popup-label').forEach(p => p.classList.add('hidden'));
+
+        popup.classList.remove('hidden');
+        
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 3000);
+    }
 
     // Language switcher logic synced with settings page using 'app_language'
     function applyAppLanguage() {
