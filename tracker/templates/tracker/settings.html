@@ -7,9 +7,10 @@
     <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
         <div>
             <h2 class="text-sm font-bold text-gray-800 dark:text-white flex items-center gap-1.5">
-                <i class="fas fa-cog text-indigo-600 text-base"></i> <span data-translate="settings_title">সেটিংস</span>
+                <i class="fas fa-cog text-indigo-600 text-base"></i> 
+                <span id="stTitle" data-bn="সেটিংস" data-en="Settings">সেটিংস</span>
             </h2>
-            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5" data-translate="settings_subtitle">আপনার অ্যাপের পছন্দসমূহ কাস্টমাইজ করুন</p>
+            <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5" id="stSub" data-bn="আপনার অ্যাপের পছন্দসমূহ কাস্টমাইজ করুন" data-en="Customize your app preferences">আপনার অ্যাপের পছন্দসমূহ কাস্টমাইজ করুন</p>
         </div>
     </div>
 
@@ -23,8 +24,8 @@
                     <i class="fas fa-language"></i>
                 </div>
                 <div>
-                    <h4 class="text-xs font-bold text-gray-800 dark:text-white" data-translate="lang_heading">ভাষা / Language</h4>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400" data-translate="lang_desc">বাংলা সিলেক্ট করা আছে</p>
+                    <h4 class="text-xs font-bold text-gray-800 dark:text-white" id="langHeading" data-bn="ভাষা" data-en="Language">ভাষা</h4>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400" id="langDesc" data-bn="আপনার পছন্দের ভাষা নির্বাচন করুন" data-en="Select your preferred language">আপনার পছন্দের ভাষা নির্বাচন করুন</p>
                 </div>
             </div>
             <select id="langSelect" class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-indigo-500 shadow-xs cursor-pointer">
@@ -40,8 +41,8 @@
                     <i class="fas fa-moon"></i>
                 </div>
                 <div>
-                    <h4 class="text-xs font-bold text-gray-800 dark:text-white" data-translate="dark_heading">ডার্ক মোড / Dark Mode</h4>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400" data-translate="dark_desc">চোখের আরামদায়ক থিম</p>
+                    <h4 class="text-xs font-bold text-gray-800 dark:text-white" id="darkHeading" data-bn="ডার্ক মোড" data-en="Dark Mode">ডার্ক মোড</h4>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400" id="darkDesc" data-bn="চোখের আরামদায়ক থিম" data-en="Comfortable eye theme">চোখের আরামদায়ক থিম</p>
                 </div>
             </div>
             <!-- Toggle Switch -->
@@ -60,8 +61,8 @@
                         <i class="fas fa-sign-out-alt"></i>
                     </div>
                     <div class="text-left">
-                        <h4 class="text-xs font-bold text-rose-600 dark:text-rose-400">লগআউট / Log Out</h4>
-                        <p class="text-[10px] text-gray-500 dark:text-gray-400">আপনার অ্যাকাউন্ট থেকে বের হয়ে যান</p>
+                        <h4 class="text-xs font-bold text-rose-600 dark:text-rose-400" id="logoutHeading" data-bn="লগআউট" data-en="Log Out">লগআউট</h4>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400" id="logoutDesc" data-bn="আপনার অ্যাকাউন্ট থেকে বের হয়ে যান" data-en="Exit from your account">আপনার অ্যাকাউন্ট থেকে বের হয়ে যান</p>
                     </div>
                 </div>
                 <i class="fas fa-chevron-right text-xs text-rose-400"></i>
@@ -70,7 +71,7 @@
 
     </div>
 
-    <!-- App Info & Branding Card -->
+    <!-- App Info & Branding Card (As requested: Name, Version, Developer unchanged) -->
     <div class="bg-gradient-to-r from-indigo-900 via-indigo-950 to-gray-900 border border-indigo-500/20 rounded-2xl p-4 text-center mt-2 shadow-lg relative overflow-hidden flex flex-col items-center gap-1">
         <div class="absolute -right-6 -top-6 w-20 h-20 bg-indigo-500/20 rounded-full blur-xl"></div>
         <h4 class="text-xs font-bold text-indigo-100 tracking-wide">Money Spy</h4>
@@ -106,15 +107,26 @@
         }
     });
 
-    // Language Selector Sync
+    // Language Selector & Dynamic Text Translation Function
+    function applySettingsLanguage(lang) {
+        document.querySelectorAll('[data-bn]').forEach(el => {
+            if (lang === 'en') {
+                el.innerText = el.getAttribute('data-en');
+            } else {
+                el.innerText = el.getAttribute('data-bn');
+            }
+        });
+    }
+
     const langSelect = document.getElementById('langSelect');
     const currentLang = localStorage.getItem('language') || 'bn';
     langSelect.value = currentLang;
+    applySettingsLanguage(currentLang);
 
     langSelect.addEventListener('change', function() {
         const selectedLang = this.value;
         localStorage.setItem('language', selectedLang);
-        applyGlobalTranslation(selectedLang);
+        applySettingsLanguage(selectedLang);
     });
 </script>
 {% endblock %}
