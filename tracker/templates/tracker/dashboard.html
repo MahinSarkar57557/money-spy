@@ -154,7 +154,7 @@
     </div>
 </div>
 
-<!-- AMOUNT INPUT SUB-MODAL (Fixed layout for Mobile, matching width and fully translated based on Settings) -->
+<!-- AMOUNT INPUT SUB-MODAL -->
 <div id="amountModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-900 w-full max-w-sm rounded-3xl p-5 shadow-2xl box-border max-h-[90vh] overflow-y-auto">
         <form method="POST" action="{% url 'add_transaction' %}">
@@ -170,7 +170,6 @@
             
             <div class="mb-3">
                 <label class="block text-[11px] font-bold text-gray-600 dark:text-gray-400 mb-1" data-en="Date" data-bn="তারিখ">Date</label>
-                <!-- Fixed Date input box with matching styles -->
                 <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required class="w-full box-border px-3 py-2.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl text-sm focus:outline-none focus:border-emerald-500 font-bold">
             </div>
             
@@ -196,7 +195,7 @@
 
     // Language switcher logic based on local storage setting ('bn' or 'en')
     function applyAppLanguage() {
-        const lang = localStorage.getItem('app_language') || 'bn'; // Default to Bengali if not set
+        const lang = localStorage.getItem('app_language') || 'bn';
         
         // Translate elements with data-en and data-bn
         document.querySelectorAll('[data-bn]').forEach(el => {
