@@ -5,7 +5,7 @@ import math
 import io
 import json
 import os
-from google import genai  # নতুন লাইব্রেরি ইমপোর্ট করা হলো
+from openai import OpenAI  # OpenAI লাইব্রেরি ইমপোর্ট করা হলো
 from django.http import FileResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -584,12 +584,11 @@ def finai_process_api(request):
             if not user_message:
                 return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
 
-            api_key = os.environ.get("GEMINI_API_KEY")
+            api_key = os.environ.get("OPENAI_API_KEY")
             if not api_key:
-                return JsonResponse({'status': 'error', 'reply': 'সার্ভারে জেমিনি এপিআই কি কনফিগার করা নেই।'})
+                return JsonResponse({'status': 'error', 'reply': 'সার্ভারে OpenAI এপিআই কি কনফিগার করা নেই।'})
 
-            # নতুন google-genai ক্লায়েন্ট ইনিশিয়ালাইজেশন
-            client = genai.Client(api_key=api_key)
+            client = OpenAI(api_key=api_key)
 
             user_transactions = Transaction.objects.filter(user=request.user)
             total_inc = sum(t.amount for t in user_transactions if t.transaction_type == 'income')
@@ -625,14 +624,17 @@ def finai_process_api(request):
             Do not include markdown formatting like ```json ... ```.
             """
 
-            # নতুন google-genai সিনট্যাক্স ব্যবহার করে মডেল কল করা হলো
-            response = client.models.generate_content(
-                model='gemini-1.5-flash',
-                contents=system_prompt,
+            # OpenAI মডেল দিয়ে কল করা
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message}
+                ],
+                response_format={"type": "json_object"}
             )
             
-            clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
-            
+            clean_text = response.choices[0].message.content.strip()
             ai_data = json.loads(clean_text)
             action = ai_data.get('action', 'advice')
 
