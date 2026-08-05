@@ -19,4 +19,8 @@ urlpatterns = [
     
     # লগআউট (Logout) পাথ
     path('logout/', views.logout_view, name='logout'),
+
+    # --- FinAI Chatbot & API Paths ---
+    path('finai/', views.finai_chat_view, name='finai_chat'),
+    path('api/finai-process/', views.finai_process_api, name='finai_process_api'),
 ]

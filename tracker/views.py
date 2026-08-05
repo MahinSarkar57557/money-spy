@@ -3,7 +3,9 @@ from datetime import date, datetime
 from decimal import Decimal
 import math
 import io
-from django.http import FileResponse
+import json
+import re
+from django.http import FileResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.contrib.auth.decorators import login_required
@@ -18,7 +20,7 @@ from .forms import BudgetForm
 from .models import Budget, Transaction, CATEGORY_CHOICES
 
 
-# নতুন ব্যবহারকারী রেজিস্টার করার ভিউ
+
 def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -571,6 +573,52 @@ def download_monthly_pdf(request):
 @login_required(login_url='login')
 def settings_view(request):
     return render(request, 'tracker/settings.html')
+
+
+# --- FinAI Chatbot Views ---
+@login_required(login_url='login')
+def finai_chat_view(request):
+    return render(request, 'tracker/finai.html')
+
+
+@login_required(login_url='login')
+def finai_process_api(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_message = data.get('message', '').strip()
+            
+            if not user_message:
+                return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
+
+            # টেক্সট থেকে সংখ্যা আলাদা করার লজিক
+            numbers = re.findall(r'\d+', user_message)
+            
+            if numbers:
+                amount = Decimal(numbers[0])
+                trans_type = 'expense'
+                if 'আয়' in user_message or 'income' in user_message.lower() or 'বেতন' in user_message:
+                    trans_type = 'income'
+
+                # ডেটাবেসে ট্রানজেকশন সেভ করা
+                Transaction.objects.create(
+                    user=request.user,
+                    transaction_type=trans_type,
+                    category='Miscellaneous' if trans_type == 'expense' else 'Pocket Money',
+                    amount=amount,
+                    date=timezone.now().date(),
+                    description=user_message
+                )
+
+                bot_reply = f"✅ সফলভাবে সেভ করা হয়েছে! আপনার এন্ট্রি: ৳{amount} ({'খরচ' if trans_type=='expense' else 'আয়'}) হিসেবে যোগ করা হয়েছে।"
+            else:
+                bot_reply = f"আপনার বার্তাটি পেয়েছি: '{user_message}'। আপনি অ্যামাউন্ট উল্লেখ করে বলতে পারেন, যেমন: 'বাসে ২০ টাকা খরচ হয়েছে'।"
+            
+            return JsonResponse({'status': 'success', 'reply': bot_reply})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 
 @login_required(login_url='login')

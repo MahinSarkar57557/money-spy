@@ -46,14 +46,12 @@
             border-color: #374151 !important;
         }
 
-        /* Targeted fix only for Date Inputs and specific form fields to prevent overflow */
         input[type="date"], .date-input-field {
             width: 100% !important;
             max-width: 100% !important;
             box-sizing: border-box !important;
         }
 
-        /* Smooth Page Fade-In Transition to eliminate screen flash */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
@@ -81,8 +79,8 @@
             {% endblock %}
         </div>
 
-        <!-- Bottom Navigation Bar (Fixed Full-Width) -->
-        <div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-3 px-6 flex justify-around items-center text-gray-600 dark:text-gray-400 shadow-xl z-50 transition-colors duration-300">
+        <!-- Bottom Navigation Bar (Fixed Full-Width) - FinAI placed between Budget and Settings -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-3 px-4 flex justify-around items-center text-gray-600 dark:text-gray-400 shadow-xl z-50 transition-colors duration-300">
             <a href="{% url 'dashboard' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 <i class="fas fa-chart-pie text-xl"></i>
                 <span class="text-[11px] mt-1 font-medium" data-bn="হোম" data-en="Home">হোম</span>
@@ -95,6 +93,14 @@
                 <i class="fas fa-wallet text-xl"></i>
                 <span class="text-[11px] mt-1 font-medium" data-bn="বাজেট" data-en="Budget">বাজেট</span>
             </a>
+            <!-- FinAI Chatbot Menu Item -->
+            <a href="{% url 'finai_chat' %}" class="flex flex-col items-center text-indigo-600 dark:text-indigo-400 font-semibold transition">
+                <div class="relative">
+                    <i class="fas fa-robot text-xl animate-pulse"></i>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full"></span>
+                </div>
+                <span class="text-[11px] mt-1 font-medium" data-bn="FinAI" data-en="FinAI">FinAI</span>
+            </a>
             <a href="{% url 'settings' %}" class="flex flex-col items-center hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                 <i class="fas fa-cog text-xl"></i>
                 <span class="text-[11px] mt-1 font-medium" data-bn="সেটিংস" data-en="Settings">সেটিংস</span>
@@ -106,46 +112,17 @@
     <!-- Global Translation Script -->
     <script>
         const globalTranslations = {
-            bn: {
-                nav_home: "হোম",
-                nav_calendar: "ক্যালেন্ডার",
-                nav_budget: "বাজেট",
-                nav_settings: "সেটিংস"
-            },
-            en: {
-                nav_home: "Home",
-                nav_calendar: "Calendar",
-                nav_budget: "Budget",
-                nav_settings: "Settings"
-            }
+            bn: { nav_home: "হোম", nav_calendar: "ক্যালেন্ডার", nav_budget: "বাজেট", nav_finai: "FinAI", nav_settings: "সেটিংস" },
+            en: { nav_home: "Home", nav_calendar: "Calendar", nav_budget: "Budget", nav_finai: "FinAI", nav_settings: "Settings" }
         };
 
         function applyGlobalTranslation(lang) {
             document.documentElement.lang = lang;
-            
-            // 1. Handle data-translate attributes
-            const translateElements = document.querySelectorAll('[data-translate]');
-            translateElements.forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if (globalTranslations[lang] && globalTranslations[lang][key]) {
-                    el.textContent = globalTranslations[lang][key];
-                }
-            });
-
-            // 2. Handle data-bn and data-en attributes
             document.querySelectorAll('[data-bn]').forEach(el => {
-                if (lang === 'en') {
-                    if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-en')) {
-                        el.placeholder = el.getAttribute('data-placeholder-en');
-                    } else if (el.hasAttribute('data-en')) {
-                        el.innerText = el.getAttribute('data-en');
-                    }
-                } else {
-                    if (el.tagName === 'INPUT' && el.hasAttribute('data-placeholder-bn')) {
-                        el.placeholder = el.getAttribute('data-placeholder-bn');
-                    } else if (el.hasAttribute('data-bn')) {
-                        el.innerText = el.getAttribute('data-bn');
-                    }
+                if (lang === 'en' && el.hasAttribute('data-en')) {
+                    el.innerText = el.getAttribute('data-en');
+                } else if (lang === 'bn' && el.hasAttribute('data-bn')) {
+                    el.innerText = el.getAttribute('data-bn');
                 }
             });
         }
@@ -155,21 +132,16 @@
             applyGlobalTranslation(savedLang);
         });
 
-        // Smooth browser back/forward and page caching control
         window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
+            if (event.persisted) { window.location.reload(); }
         });
     </script>
 
-    <!-- Service Worker Registration Script -->
+    <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js')
-                    .then(reg => console.log('Service Worker registered!', reg))
-                    .catch(err => console.log('Service Worker registration failed', err));
+                navigator.serviceWorker.register('/static/sw.js').catch(err => console.log('SW failed', err));
             });
         }
     </script>
