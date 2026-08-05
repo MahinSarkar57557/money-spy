@@ -5,7 +5,7 @@ import math
 import io
 import json
 import os
-import google.generativeai as genai
+from google import genai  # নতুন লাইব্রেরি ইমপোর্ট করা হলো
 from django.http import FileResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -588,7 +588,8 @@ def finai_process_api(request):
             if not api_key:
                 return JsonResponse({'status': 'error', 'reply': 'সার্ভারে জেমিনি এপিআই কি কনফিগার করা নেই।'})
 
-            genai.configure(api_key=api_key)
+            # নতুন google-genai ক্লায়েন্ট ইনিশিয়ালাইজেশন
+            client = genai.Client(api_key=api_key)
 
             user_transactions = Transaction.objects.filter(user=request.user)
             total_inc = sum(t.amount for t in user_transactions if t.transaction_type == 'income')
@@ -624,9 +625,12 @@ def finai_process_api(request):
             Do not include markdown formatting like ```json ... ```.
             """
 
-            # এখানে জেমিনির স্টেবল ও ইউনিভার্সাল মডেল 'gemini-1.5-flash' ব্যবহার করা হলো
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            response = model.generate_content(system_prompt)
+            # নতুন google-genai সিনট্যাক্স ব্যবহার করে মডেল কল করা হলো
+            response = client.models.generate_content(
+                model='gemini-1.5-flash',
+                contents=system_prompt,
+            )
+            
             clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
             
             ai_data = json.loads(clean_text)
