@@ -40,7 +40,7 @@
 
 </div>
 
-<!-- JavaScript Logic with Persistent Session Storage -->
+<!-- JavaScript Logic with Persistent Session Storage & Voice Input -->
 <script>
     const chatContainer = document.getElementById('chat-container');
     const userInput = document.getElementById('user-input');
@@ -54,8 +54,7 @@
         if (savedHistory) {
             chatContainer.innerHTML = savedHistory;
         } else {
-            // Default Welcome Message
-            appendMessage('bot', `হ্যালো! আমি <strong>FinAI</strong>। আপনি বাংলা বা ইংরেজিতে খরচ বা আয় যোগ করতে পারেন। যেমন: <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"add 20 taka expense on bus"</code> অথবা <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"বাসে ২০ টাকা খরচ হয়েছে"</code>`);
+            appendMessage('bot', `হ্যালো! আমি <strong>FinAI</strong>। আপনি বাংলা বা ইংরেজিতে খরচ বা আয় যোগ করতে পারেন। যেমন: <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"add 20 taka expense on book"</code> অথবা <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"বই বাবদ ২০ টাকা খরচ"</code>`);
         }
         chatContainer.scrollTop = chatContainer.scrollHeight;
     });
@@ -136,7 +135,7 @@
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        recognition.lang = 'bn-BD'; // Primary language support
+        recognition.lang = 'bn-BD'; 
         recognition.continuous = false;
         recognition.interimResults = false;
 
@@ -150,7 +149,7 @@
                     recognition.stop();
                 }
             } catch (err) {
-                alert('দয়া করে মাইক্রোফোন ব্যবহারের অনুমতি দিন।');
+                alert('দয়া করে মাইক্রোফোন ব্যবহারের অনুমতি দিন বা HTTPS ব্যবহার নিশ্চিত করুন।');
             }
         };
 
