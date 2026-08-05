@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 
-# ফিক্সড ২৯টি ক্যাটাগরির লিস্ট (যা ডাটাবেজে স্ট্রিং হিসেবে সেভ হবে)
+# ফিক্সড ক্যাটাগরির লিস্ট
 CATEGORY_CHOICES = [
     ('Tuition & Fees', 'Tuition & Fees'),
     ('Books & Notes', 'Books & Notes'),

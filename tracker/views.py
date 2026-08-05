@@ -89,16 +89,15 @@ def dashboard_view(request):
         {"name": "bKash / Nagad", "icon": "fas fa-wallet"},
         {"name": "Clothing & Tailoring", "icon": "fas fa-tshirt"},
         {"name": "Personal Care", "icon": "fas fa-cut"},
-        {"name": "Medical & Pharmacy", "icon": "fas fa-medkit"},
-        {"name": "Fitness & Gym", "icon": "fas fa-dumbbell"},
-        {"name": "Entertainment & Movies", "icon": "fas fa-film"},
-        {"name": "Gadgets & Electronics", "icon": "fas fa-laptop"},
-        {"name": "Home Maintenance", "icon": "fas fa-tools"},
-        {"name": "Charity & Donation", "icon": "fas fa-hand-holding-heart"},
-        {"name": "Family & Friends", "icon": "fas fa-users"},
-        {"name": "Pet Care", "icon": "fas fa-paw"},
-        {"name": "Miscellaneous", "icon": "fas fa-box"},
-        {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
+        {"name": "Medicine & Health", "icon": "fas fa-medkit"},
+        {"name": "Gym & Sports", "icon": "fas fa-dumbbell"},
+        {"name": "Entertainment & Subscriptions", "icon": "fas fa-film"},
+        {"name": "Gift", "icon": "fas fa-gift"},
+        {"name": "Donation", "icon": "fas fa-hand-holding-heart"},
+        {"name": "Debt Repayment", "icon": "fas fa-undo-alt"},
+        {"name": "Tech & Gadgets", "icon": "fas fa-laptop"},
+        {"name": "Savings & Investment", "icon": "fas fa-piggy-bank"},
+        {"name": "Miscellaneous / Others", "icon": "fas fa-box"},
     ]
 
     income_categories = [
@@ -376,16 +375,15 @@ def budget_view(request):
         {"name": "bKash / Nagad", "icon": "fas fa-wallet"},
         {"name": "Clothing & Tailoring", "icon": "fas fa-tshirt"},
         {"name": "Personal Care", "icon": "fas fa-cut"},
-        {"name": "Medical & Pharmacy", "icon": "fas fa-medkit"},
-        {"name": "Fitness & Gym", "icon": "fas fa-dumbbell"},
-        {"name": "Entertainment & Movies", "icon": "fas fa-film"},
-        {"name": "Gadgets & Electronics", "icon": "fas fa-laptop"},
-        {"name": "Home Maintenance", "icon": "fas fa-tools"},
-        {"name": "Charity & Donation", "icon": "fas fa-hand-holding-heart"},
-        {"name": "Family & Friends", "icon": "fas fa-users"},
-        {"name": "Pet Care", "icon": "fas fa-paw"},
-        {"name": "Miscellaneous", "icon": "fas fa-box"},
-        {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
+        {"name": "Medicine & Health", "icon": "fas fa-medkit"},
+        {"name": "Gym & Sports", "icon": "fas fa-dumbbell"},
+        {"name": "Entertainment & Subscriptions", "icon": "fas fa-film"},
+        {"name": "Gift", "icon": "fas fa-gift"},
+        {"name": "Donation", "icon": "fas fa-hand-holding-heart"},
+        {"name": "Debt Repayment", "icon": "fas fa-undo-alt"},
+        {"name": "Tech & Gadgets", "icon": "fas fa-laptop"},
+        {"name": "Savings & Investment", "icon": "fas fa-piggy-bank"},
+        {"name": "Miscellaneous / Others", "icon": "fas fa-box"},
     ]
 
     icon_dict = {cat["name"]: cat["icon"] for cat in expense_categories}
@@ -611,7 +609,7 @@ def finai_process_api(request):
                - "transaction_type": "expense" or "income"
                - "amount": numeric value
                - "category": Must strictly match one of the valid categories below.
-               Valid Expense Categories: Tuition & Fees, Books & Notes, Stationery, Courses & Training, Mess / Hall Bill, Restaurants & Fast Food, Tea & Snacks, Groceries, Bus / Local Transport, Rickshaw & CNG, Bike Fuel / Maintenance, Tour & Travel, Rent / Room Rent, Electricity & Gas, Internet & WiFi, Mobile Recharge, bKash / Nagad, Clothing & Tailoring, Personal Care, Medical & Pharmacy, Fitness & Gym, Entertainment & Movies, Gadgets & Electronics, Home Maintenance, Charity & Donation, Family & Friends, Pet Care, Miscellaneous, Emergency Expense
+               Valid Expense Categories: Tuition & Fees, Books & Notes, Stationery, Courses & Training, Mess / Hall Bill, Restaurants & Fast Food, Tea & Snacks, Groceries, Bus / Local Transport, Rickshaw & CNG, Bike Fuel / Maintenance, Tour & Travel, Rent / Room Rent, Electricity & Gas, Internet & WiFi, Mobile Recharge, bKash / Nagad, Clothing & Tailoring, Personal Care, Medicine & Health, Gym & Sports, Entertainment & Subscriptions, Gift, Donation, Debt Repayment, Tech & Gadgets, Savings & Investment, Miscellaneous / Others
                Valid Income Categories: Job, Business, Freelancing, Tuition, Gift, Money Back, Pocket Money
             
             2. If the user message is a greeting (like "hi", "hlw", "hello"), general query, or financial advice question, set:
@@ -626,8 +624,8 @@ def finai_process_api(request):
             Do not include markdown formatting like ```json ... ```.
             """
 
-            # এখানে জেমিনি মডেলের নাম সঠিক কনভেনশনে আপডেট করা হলো
-            model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            # মডেলের নাম সঠিকভাবে স্ট্যাবল জেমিনি জেনারেশন মডেলে সেট করা হলো
+            model = genai.GenerativeModel('gemini-1.5-flash')
             response = model.generate_content(system_prompt)
             clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
             
@@ -637,7 +635,7 @@ def finai_process_api(request):
             if action == 'transaction':
                 amount = Decimal(str(ai_data.get('amount', 0)))
                 trans_type = ai_data.get('transaction_type', 'expense')
-                category = ai_data.get('category', 'Miscellaneous')
+                category = ai_data.get('category', 'Miscellaneous / Others')
 
                 if amount > 0:
                     Transaction.objects.create(
