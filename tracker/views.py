@@ -20,9 +20,6 @@ from django.utils import timezone
 from .forms import BudgetForm
 from .models import Budget, Transaction, CATEGORY_CHOICES
 
-# জেমিনি এআই কনফিগারেশন
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-
 
 def signup_view(request):
     if request.method == 'POST':
@@ -72,7 +69,6 @@ def dashboard_view(request):
     )
     balance = total_income - total_expense
 
-    # খরচের ২৯টি ক্যাটাগরি এবং সেগুলোর আইকন
     expense_categories = [
         {"name": "Tuition & Fees", "icon": "fas fa-graduation-cap"},
         {"name": "Books & Notes", "icon": "fas fa-book"},
@@ -105,7 +101,6 @@ def dashboard_view(request):
         {"name": "Emergency Expense", "icon": "fas fa-exclamation-triangle"},
     ]
 
-    # আয়ের ৭টি ক্যাটাগরিগুলো এবং আইকন
     income_categories = [
         {"name": "Job", "icon": "fas fa-briefcase"},
         {"name": "Business", "icon": "fas fa-store"},
@@ -267,7 +262,6 @@ def calendar_view(request):
             'height_percentage': height_pct,
         })
 
-    # --- Month-to-Month Comparison Calculations ---
     current_month_total = sum(
         t.amount for t in transactions if t.transaction_type == 'expense'
     )
@@ -418,7 +412,6 @@ def budget_view(request):
 
         spent_decimal = Decimal(str(spent))
         budget_amount_decimal = Decimal(str(b.amount))
-
         remaining = budget_amount_decimal - spent_decimal
 
         percentage = (
@@ -578,7 +571,6 @@ def settings_view(request):
     return render(request, 'tracker/settings.html')
 
 
-# --- FinAI Chatbot Views with Dual Action (Transaction Tracking + Smart Financial Advisor) ---
 @login_required(login_url='login')
 def finai_chat_view(request):
     return render(request, 'tracker/finai.html')
@@ -594,45 +586,37 @@ def finai_process_api(request):
             if not user_message:
                 return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
 
-            # ১. ইউজারের নিজস্ব ফিন্যান্সিয়াল ডেটা ডাটাবেজ থেকে কুয়েরি করা
+            api_key = os.environ.get("GEMINI_API_KEY")
+            if not api_key:
+                return JsonResponse({'status': 'error', 'reply': 'সার্ভারে জেমিনি এপিআই কি কনফিগার করা নেই।'})
+
+            genai.configure(api_key=api_key)
+
             user_transactions = Transaction.objects.filter(user=request.user)
             total_inc = sum(t.amount for t in user_transactions if t.transaction_type == 'income')
             total_exp = sum(t.amount for t in user_transactions if t.transaction_type == 'expense')
             current_balance = total_inc - total_exp
 
-            # ২. বাংলাদেশের ইনভেস্টমেন্ট ও ফিন্যান্সিয়াল গাইডলাইন কন্টেক্সট
-            bangladesh_finance_context = """
-            Bangladesh Financial & Investment Market Context:
-            - Govt Sanchayapatra: ~11-12% return (safe, long-term).
-            - Bank DPS / FDR: ~7-10% return per year.
-            - Retail/Crowdfunding Investment (e.g., biniyog.io): ~12-18% variable return based on agro/retail projects.
-            - Stock Market (DSE): High risk, variable return.
-            - Mutual Funds / SIP: Moderate risk, ~10-14% average return.
-            """
-
-            # ৩. জেমিনি এআই প্রম্পট যাতে ট্রানজেকশন সেভিং এবং ফিন্যান্স অ্যাডভাইস উভয়ই করতে পারে
             system_prompt = f"""
-            You are 'FinAI', an expert personal financial advisor, mentor, and transaction parser for a user in Bangladesh.
+            You are 'FinAI', an expert personal financial advisor and transaction parser for a user in Bangladesh.
             
             User's Real-time Financial Data:
             - Total Income: ৳{total_inc}
             - Total Expense: ৳{total_exp}
             - Current Balance: ৳{current_balance}
 
-            {bangladesh_finance_context}
-
             Your tasks:
-            1. If the user message is about adding an expense or income (e.g., "50 taka transport expense", "500 taka job income", "বিশ টাকা খরচ হইছে ট্রান্সপোর্টে"), set:
+            1. If the user message is about adding an expense or income (e.g., "50 taka transport expense", "500 taka job income", "বই বাবদ ২০ টাকা খরচ"), set:
                - "action": "transaction"
                - "transaction_type": "expense" or "income"
-               - "amount": numeric value (convert words like বিশ to 20 if needed)
+               - "amount": numeric value
                - "category": Must strictly match one of the valid categories below.
                Valid Expense Categories: Tuition & Fees, Books & Notes, Stationery, Courses & Training, Mess / Hall Bill, Restaurants & Fast Food, Tea & Snacks, Groceries, Bus / Local Transport, Rickshaw & CNG, Bike Fuel / Maintenance, Tour & Travel, Rent / Room Rent, Electricity & Gas, Internet & WiFi, Mobile Recharge, bKash / Nagad, Clothing & Tailoring, Personal Care, Medical & Pharmacy, Fitness & Gym, Entertainment & Movies, Gadgets & Electronics, Home Maintenance, Charity & Donation, Family & Friends, Pet Care, Miscellaneous, Emergency Expense
                Valid Income Categories: Job, Business, Freelancing, Tuition, Gift, Money Back, Pocket Money
             
-            2. If the user message is a financial question, balance check, budgeting advice, or investment query (e.g., "এই মাসে খরচ কেমন হলো?", "কোথায় ইনভেস্ট করলে ভালো রিটার্ন পাব?", "মাস শেষে টাকা থাকবে নাকি?", "আজ বাস এ কত খরচ হইছে?"), set:
+            2. If the user message is a greeting (like "hi", "hlw", "hello"), general query, or financial advice question, set:
                - "action": "advice"
-               - "reply": Provide a practical, encouraging, and detailed response in Bengali using their real financial data and Bangladesh market context.
+               - "reply": Provide a friendly greeting or practical financial response in Bengali.
 
             User Message: "{user_message}"
 
@@ -667,11 +651,11 @@ def finai_process_api(request):
                 else:
                     bot_reply = "দয়া করে সঠিক টাকার পরিমাণ উল্লেখ করুন।"
             else:
-                bot_reply = ai_data.get('reply', 'দুঃখিত, বিষয়টি বুঝতে পারিনি। আবার চেষ্টা করুন।')
+                bot_reply = ai_data.get('reply', 'হ্যালো! আমি আপনার ফিন্যান্সিয়াল অ্যাসিস্ট্যান্ট। বলুন কীভাবে সাহায্য করতে পারি?')
 
             return JsonResponse({'status': 'success', 'reply': bot_reply})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'reply': f"সিস্টেমে একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।"}, status=400)
+            return JsonResponse({'status': 'error', 'reply': f'ত্রুটি: {str(e)}'}, status=400)
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
