@@ -591,28 +591,36 @@ def finai_process_api(request):
             if not user_message:
                 return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
 
-            # টেক্সট থেকে সংখ্যা আলাদা করার লজিক
+            # টেক্সট থেকে সংখ্যা বা অ্যামাউন্ট বের করা (বাংলা ও ইংরেজি উভয় ভাষার জন্য)
             numbers = re.findall(r'\d+', user_message)
             
             if numbers:
                 amount = Decimal(numbers[0])
                 trans_type = 'expense'
-                if 'আয়' in user_message or 'income' in user_message.lower() or 'বেতন' in user_message:
+                msg_lower = user_message.lower()
+
+                # আয় বা ইনকাম শনাক্ত করার লজিক
+                if 'আয়' in user_message or 'income' in msg_lower or 'salary' in msg_lower or 'deposit' in msg_lower:
                     trans_type = 'income'
 
-                # ডেটাবেসে ট্রানজেকশন সেভ করা
+                # ক্যাটাগরি স্বয়ংক্রিয় নির্ধারণ
+                category = 'Bus / Local Transport' if 'bus' in msg_lower or 'বাস' in user_message else 'Miscellaneous'
+                if trans_type == 'income':
+                    category = 'Pocket Money'
+
+                # ডেটাবেসে ট্রানজেকশন সেভ করা (যা ড্যাশবোর্ড, ক্যালেন্ডার, বাজেট ও পিডিএফ সব জায়গায় দেখাবে)
                 Transaction.objects.create(
                     user=request.user,
                     transaction_type=trans_type,
-                    category='Miscellaneous' if trans_type == 'expense' else 'Pocket Money',
+                    category=category,
                     amount=amount,
                     date=timezone.now().date(),
                     description=user_message
                 )
 
-                bot_reply = f"✅ সফলভাবে সেভ করা হয়েছে! আপনার এন্ট্রি: ৳{amount} ({'খরচ' if trans_type=='expense' else 'আয়'}) হিসেবে যোগ করা হয়েছে।"
+                bot_reply = f"✅ সফলভাবে সেভ করা হয়েছে! ৳{amount} ({'খরচ' if trans_type=='expense' else 'আয়'}) হিসেবে যোগ করা হয়েছে।"
             else:
-                bot_reply = f"আপনার বার্তাটি পেয়েছি: '{user_message}'। আপনি অ্যামাউন্ট উল্লেখ করে বলতে পারেন, যেমন: 'বাসে ২০ টাকা খরচ হয়েছে'।"
+                bot_reply = f"আপনার বার্তাটি পেয়েছি: '{user_message}'। অনুগ্রহ করে অ্যামাউন্টসহ লিখুন, যেমন: 'add 20 taka expense on bus' বা 'বাসে ২০ টাকা খরচ হয়েছে'।"
             
             return JsonResponse({'status': 'success', 'reply': bot_reply})
         except Exception as e:
