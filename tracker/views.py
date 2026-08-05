@@ -4,7 +4,8 @@ from decimal import Decimal
 import math
 import io
 import json
-import re
+import os
+import google.generativeai as genai
 from django.http import FileResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -19,6 +20,8 @@ from django.utils import timezone
 from .forms import BudgetForm
 from .models import Budget, Transaction, CATEGORY_CHOICES
 
+# জেমিনি এআই কনফিগারেশন
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 
 def signup_view(request):
@@ -575,7 +578,7 @@ def settings_view(request):
     return render(request, 'tracker/settings.html')
 
 
-# --- FinAI Chatbot Views ---
+# --- FinAI Chatbot Views with Dual Action (Transaction Tracking + Smart Financial Advisor) ---
 @login_required(login_url='login')
 def finai_chat_view(request):
     return render(request, 'tracker/finai.html')
@@ -589,114 +592,86 @@ def finai_process_api(request):
             user_message = data.get('message', '').strip()
             
             if not user_message:
-                return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
+                return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
 
-            numbers = re.findall(r'\d+', user_message)
+            # ১. ইউজারের নিজস্ব ফিন্যান্সিয়াল ডেটা ডাটাবেজ থেকে কুয়েরি করা
+            user_transactions = Transaction.objects.filter(user=request.user)
+            total_inc = sum(t.amount for t in user_transactions if t.transaction_type == 'income')
+            total_exp = sum(t.amount for t in user_transactions if t.transaction_type == 'expense')
+            current_balance = total_inc - total_exp
+
+            # ২. বাংলাদেশের ইনভেস্টমেন্ট ও ফিন্যান্সিয়াল গাইডলাইন কন্টেক্সট
+            bangladesh_finance_context = """
+            Bangladesh Financial & Investment Market Context:
+            - Govt Sanchayapatra: ~11-12% return (safe, long-term).
+            - Bank DPS / FDR: ~7-10% return per year.
+            - Retail/Crowdfunding Investment (e.g., biniyog.io): ~12-18% variable return based on agro/retail projects.
+            - Stock Market (DSE): High risk, variable return.
+            - Mutual Funds / SIP: Moderate risk, ~10-14% average return.
+            """
+
+            # ৩. জেমিনি এআই প্রম্পট যাতে ট্রানজেকশন সেভিং এবং ফিন্যান্স অ্যাডভাইস উভয়ই করতে পারে
+            system_prompt = f"""
+            You are 'FinAI', an expert personal financial advisor, mentor, and transaction parser for a user in Bangladesh.
             
-            if numbers:
-                amount = Decimal(numbers[0])
-                trans_type = 'expense'
-                msg_lower = user_message.lower()
+            User's Real-time Financial Data:
+            - Total Income: ৳{total_inc}
+            - Total Expense: ৳{total_exp}
+            - Current Balance: ৳{current_balance}
 
-                # --- Income Keywords Check (7 Income Categories Mapping) ---
-                if any(word in msg_lower for word in ['আয়', 'income', 'salary', 'বেতন', 'job', 'nakkhi', 'business', 'ব্যবসা', 'store', 'freelancing', 'ফ্রিল্যান্সিং', 'tution', 'tuition', 'টিউশন', 'gift', 'উপহার', 'money back', 'ফেরত', 'pocket money', 'পকেট মানি']):
-                    trans_type = 'income'
+            {bangladesh_finance_context}
 
-                # --- Category Selection Mapping ---
-                category = 'Miscellaneous'
+            Your tasks:
+            1. If the user message is about adding an expense or income (e.g., "50 taka transport expense", "500 taka job income", "বিশ টাকা খরচ হইছে ট্রান্সপোর্টে"), set:
+               - "action": "transaction"
+               - "transaction_type": "expense" or "income"
+               - "amount": numeric value (convert words like বিশ to 20 if needed)
+               - "category": Must strictly match one of the valid categories below.
+               Valid Expense Categories: Tuition & Fees, Books & Notes, Stationery, Courses & Training, Mess / Hall Bill, Restaurants & Fast Food, Tea & Snacks, Groceries, Bus / Local Transport, Rickshaw & CNG, Bike Fuel / Maintenance, Tour & Travel, Rent / Room Rent, Electricity & Gas, Internet & WiFi, Mobile Recharge, bKash / Nagad, Clothing & Tailoring, Personal Care, Medical & Pharmacy, Fitness & Gym, Entertainment & Movies, Gadgets & Electronics, Home Maintenance, Charity & Donation, Family & Friends, Pet Care, Miscellaneous, Emergency Expense
+               Valid Income Categories: Job, Business, Freelancing, Tuition, Gift, Money Back, Pocket Money
+            
+            2. If the user message is a financial question, balance check, budgeting advice, or investment query (e.g., "এই মাসে খরচ কেমন হলো?", "কোথায় ইনভেস্ট করলে ভালো রিটার্ন পাব?", "মাস শেষে টাকা থাকবে নাকি?", "আজ বাস এ কত খরচ হইছে?"), set:
+               - "action": "advice"
+               - "reply": Provide a practical, encouraging, and detailed response in Bengali using their real financial data and Bangladesh market context.
 
-                if trans_type == 'income':
-                    category = 'Pocket Money'
-                    if 'job' in msg_lower or 'salary' in msg_lower or 'বেতন' in user_message:
-                        category = 'Job'
-                    elif 'business' in msg_lower or 'ব্যবসা' in user_message:
-                        category = 'Business'
-                    elif 'freelancing' in msg_lower or 'ফ্রিল্যান্সিং' in user_message:
-                        category = 'Freelancing'
-                    elif 'tuition' in msg_lower or 'tution' in msg_lower or 'টিউশন' in user_message:
-                        category = 'Tuition'
-                    elif 'gift' in msg_lower or 'উপহার' in user_message:
-                        category = 'Gift'
-                    elif 'back' in msg_lower or 'money back' in msg_lower or 'ফেরত' in user_message:
-                        category = 'Money Back'
+            User Message: "{user_message}"
+
+            Return ONLY a valid JSON object. 
+            If action is "transaction", keys must be: "action", "transaction_type", "amount", "category".
+            If action is "advice", keys must be: "action", "reply".
+            Do not include markdown formatting like ```json ... ```.
+            """
+
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(system_prompt)
+            clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
+            
+            ai_data = json.loads(clean_text)
+            action = ai_data.get('action', 'advice')
+
+            if action == 'transaction':
+                amount = Decimal(str(ai_data.get('amount', 0)))
+                trans_type = ai_data.get('transaction_type', 'expense')
+                category = ai_data.get('category', 'Miscellaneous')
+
+                if amount > 0:
+                    Transaction.objects.create(
+                        user=request.user,
+                        transaction_type=trans_type,
+                        category=category,
+                        amount=amount,
+                        date=timezone.now().date(),
+                        description=user_message
+                    )
+                    bot_reply = f"✅ সফলভাবে সেভ করা হয়েছে! ৳{amount} ({category} - {'আয়' if trans_type=='income' else 'খরচ'}) হিসেবে যোগ করা হয়েছে।"
                 else:
-                    # Expense Categories Mapping (29 Categories)
-                    if 'tuition' in msg_lower or 'fees' in msg_lower or 'কোচিং' in user_message:
-                        category = 'Tuition & Fees'
-                    elif 'book' in msg_lower or 'notes' in msg_lower or 'বই' in user_message:
-                        category = 'Books & Notes'
-                    elif 'pen' in msg_lower or 'stationery' in msg_lower or 'কলম' in user_message:
-                        category = 'Stationery'
-                    elif 'course' in msg_lower or 'training' in msg_lower:
-                        category = 'Courses & Training'
-                    elif 'mess' in msg_lower or 'hall' in msg_lower or 'খাবার বিল' in user_message:
-                        category = 'Mess / Hall Bill'
-                    elif 'restaurant' in msg_lower or 'fast food' in msg_lower or 'burger' in msg_lower or 'খাবার' in user_message:
-                        category = 'Restaurants & Fast Food'
-                    elif 'tea' in msg_lower or 'snacks' in msg_lower or 'চা' in user_message:
-                        category = 'Tea & Snacks'
-                    elif 'grocery' in msg_lower or 'bazar' in msg_lower or 'বাজার' in user_message:
-                        category = 'Groceries'
-                    elif 'bus' in msg_lower or 'transport' in msg_lower or 'বাস' in user_message:
-                        category = 'Bus / Local Transport'
-                    elif 'rickshaw' in msg_lower or 'cng' in msg_lower or 'রিকশা' in user_message:
-                        category = 'Rickshaw & CNG'
-                    elif 'bike' in msg_lower or 'fuel' in msg_lower or 'motorcycle' in msg_lower or 'তেল' in user_message:
-                        category = 'Bike Fuel / Maintenance'
-                    elif 'tour' in msg_lower or 'travel' in msg_lower or 'ঘোরাঘুরি' in user_message:
-                        category = 'Tour & Travel'
-                    elif 'rent' in msg_lower or 'room' in msg_lower or 'ভাড়া' in user_message:
-                        category = 'Rent / Room Rent'
-                    elif 'electricity' in msg_lower or 'gas' in msg_lower or 'বিদ্যুৎ' in user_message:
-                        category = 'Electricity & Gas'
-                    elif 'wifi' in msg_lower or 'internet' in msg_lower or 'নেট' in user_message:
-                        category = 'Internet & WiFi'
-                    elif 'mobile' in msg_lower or 'recharge' in msg_lower or 'মোবাইল' in user_message:
-                        category = 'Mobile Recharge'
-                    elif 'bkash' in msg_lower or 'nagad' in msg_lower or 'বিকাশ' in user_message:
-                        category = 'bKash / Nagad'
-                    elif 'cloth' in msg_lower or 'tailoring' in msg_lower or 'কাপড়' in user_message:
-                        category = 'Clothing & Tailoring'
-                    elif 'personal' in msg_lower or 'haircut' in msg_lower or 'কাট' in user_message:
-                        category = 'Personal Care'
-                    elif 'medical' in msg_lower or 'pharmacy' in msg_lower or 'ঔষধ' in user_message:
-                        category = 'Medical & Pharmacy'
-                    elif 'gym' in msg_lower or 'fitness' in msg_lower:
-                        category = 'Fitness & Gym'
-                    elif 'movie' in msg_lower or 'entertainment' in msg_lower or 'সিনেমার' in user_message:
-                        category = 'Entertainment & Movies'
-                    elif 'gadget' in msg_lower or 'electronics' in msg_lower or 'ল্যাপটপ' in user_message:
-                        category = 'Gadgets & Electronics'
-                    elif 'maintenance' in msg_lower or 'tools' in msg_lower:
-                        category = 'Home Maintenance'
-                    elif 'charity' in msg_lower or 'donation' in msg_lower or 'দান' in user_message:
-                        category = 'Charity & Donation'
-                    elif 'family' in msg_lower or 'friend' in msg_lower or 'বন্ধু' in user_message:
-                        category = 'Family & Friends'
-                    elif 'pet' in msg_lower or 'cat' in msg_lower or 'dog' in msg_lower:
-                        category = 'Pet Care'
-                    elif 'emergency' in msg_lower or 'জরুরী' in user_message:
-                        category = 'Emergency Expense'
-                    else:
-                        category = 'Miscellaneous'
-
-                # ডেটাবেসে সঠিক তথ্য সেভ করা
-                Transaction.objects.create(
-                    user=request.user,
-                    transaction_type=trans_type,
-                    category=category,
-                    amount=amount,
-                    date=timezone.now().date(),
-                    description=user_message
-                )
-
-                bot_reply = f"✅ সফলভাবে সেভ করা হয়েছে! ৳{amount} ({category} - {'আয়' if trans_type=='income' else 'খরচ'}) হিসেবে যোগ করা হয়েছে।"
+                    bot_reply = "দয়া করে সঠিক টাকার পরিমাণ উল্লেখ করুন।"
             else:
-                bot_reply = f"আপনার বার্তাটি পেয়েছি: '{user_message}'। অনুগ্রহ করে অ্যামাউন্টসহ লিখুন, যেমন: '20 taka expense on book' বা '500 taka income from job'।"
-            
+                bot_reply = ai_data.get('reply', 'দুঃখিত, বিষয়টি বুঝতে পারিনি। আবার চেষ্টা করুন।')
+
             return JsonResponse({'status': 'success', 'reply': bot_reply})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            return JsonResponse({'status': 'error', 'reply': f"সিস্টেমে একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।"}, status=400)
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 

@@ -40,7 +40,7 @@
 
 </div>
 
-<!-- JavaScript Logic with Persistent Session Storage & Voice Input -->
+<!-- JavaScript Logic with Dynamic Language Support & Voice Input -->
 <script>
     const chatContainer = document.getElementById('chat-container');
     const userInput = document.getElementById('user-input');
@@ -51,10 +51,16 @@
     // Load Chat History from sessionStorage on page load
     document.addEventListener("DOMContentLoaded", () => {
         const savedHistory = sessionStorage.getItem('finai_chat_history');
+        const currentLang = localStorage.getItem('language') || 'bn';
+        
         if (savedHistory) {
             chatContainer.innerHTML = savedHistory;
         } else {
-            appendMessage('bot', `হ্যালো! আমি <strong>FinAI</strong>। আপনি বাংলা বা ইংরেজিতে খরচ বা আয় যোগ করতে পারেন। যেমন: <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"add 20 taka expense on book"</code> অথবা <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"বই বাবদ ২০ টাকা খরচ"</code>`);
+            if (currentLang === 'en') {
+                appendMessage('bot', `Hello! I am <strong>FinAI</strong>. You can add expenses/incomes or ask financial questions in English or Bengali. <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"Add 50 taka expense on transport"</code>`);
+            } else {
+                appendMessage('bot', `হ্যালো! আমি <strong>FinAI</strong>। আপনি বাংলা বা ইংরেজিতে খরচ বা আয় যোগ করতে পারেন। যেমন: <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"add 20 taka expense on book"</code> অথবা <br><code class="text-xs bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded mt-1 inline-block">"বই বাবদ ২০ টাকা খরচ"</code>`);
+            }
         }
         chatContainer.scrollTop = chatContainer.scrollHeight;
     });
@@ -89,25 +95,31 @@
         const currentText = text;
         userInput.value = '';
 
-        // Send to Django backend API
+        // Retrieve settings language preference ('bn' or 'en')
+        const preferredLang = localStorage.getItem('language') || 'bn';
+
+        // Send to Django backend API with language setting
         fetch('/api/finai-process/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({ message: currentText })
+            body: JSON.stringify({ 
+                message: currentText, 
+                language: preferredLang 
+            })
         })
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
                 appendMessage('bot', data.reply);
             } else {
-                appendMessage('bot', data.reply || 'দুঃখিত, একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+                appendMessage('bot', data.reply || (preferredLang === 'bn' ? 'দুঃখিত, একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।' : 'Sorry, something went wrong.'));
             }
         })
         .catch(error => {
-            appendMessage('bot', 'সার্ভারে সংযোগ স্থাপন করা যায়নি।');
+            appendMessage('bot', preferredLang === 'bn' ? 'সার্ভারে সংযোগ স্থাপন করা যায়নি।' : 'Unable to connect to the server.');
         });
     }
 
@@ -131,11 +143,12 @@
         return cookieValue;
     }
 
-    // Web Speech API for Multi-language Voice Input (Bangla & English)
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // Cross-Platform Web Speech API (Android Chrome & iPhone Safari compatibility)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
-        recognition.lang = 'bn-BD'; 
+        recognition.lang = 'bn-BD'; // Supports mixed audio capture
         recognition.continuous = false;
         recognition.interimResults = false;
 
@@ -149,7 +162,7 @@
                     recognition.stop();
                 }
             } catch (err) {
-                alert('দয়া করে মাইক্রোফোন ব্যবহারের অনুমতি দিন বা HTTPS ব্যবহার নিশ্চিত করুন।');
+                alert('দয়া করে মাইক্রোফোন ব্যবহারের অনুমতি দিন বা HTTPS ব্যবহার নিশ্চিত করুন।');
             }
         };
 
@@ -185,7 +198,8 @@
     function clearChat() {
         sessionStorage.removeItem('finai_chat_history');
         chatContainer.innerHTML = '';
-        appendMessage('bot', 'চ্যাট হিস্ট্রি রিসেট করা হয়েছে। নতুন করে শুরু করুন!');
+        const currentLang = localStorage.getItem('language') || 'bn';
+        appendMessage('bot', currentLang === 'en' ? 'Chat history cleared. Let’s start fresh!' : 'চ্যাট হিস্ট্রি রিসেট করা হয়েছে। নতুন করে শুরু করুন!');
     }
 </script>
 {% endblock %}
