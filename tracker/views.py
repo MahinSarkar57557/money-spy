@@ -594,13 +594,13 @@ def finai_process_api(request):
             if not user_message:
                 return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
 
-            # ১. ইউজারের নিজস্ব ফিন্যান্সিয়াল ডেটা ডাটাবেজ থেকে কুয়েরি করা
+            # ১. ইউজারের নিজস্ব ফিন্যান্সিয়াল ডেটা ডাটাবেজ থেকে কুয়েরি করা
             user_transactions = Transaction.objects.filter(user=request.user)
             total_inc = sum(t.amount for t in user_transactions if t.transaction_type == 'income')
             total_exp = sum(t.amount for t in user_transactions if t.transaction_type == 'expense')
             current_balance = total_inc - total_exp
 
-            # ২. বাংলাদেশের ইনভেস্টমেন্ট ও ফিন্যান্সিয়াল গাইডলাইন কন্টেক্সট
+            # ২. বাংলাদেশের ইনভেস্টমেন্ট ও ফিন্যান্সিয়াল গাইডলাইন কন্টেক্সট
             bangladesh_finance_context = """
             Bangladesh Financial & Investment Market Context:
             - Govt Sanchayapatra: ~11-12% return (safe, long-term).
@@ -610,7 +610,7 @@ def finai_process_api(request):
             - Mutual Funds / SIP: Moderate risk, ~10-14% average return.
             """
 
-            # ৩. জেমিনি এআই প্রম্পট যাতে ট্রানজেকশন সেভিং এবং ফিন্যান্স অ্যাডভাইস উভয়ই করতে পারে
+            # ৩. জেমিনি এআই প্রম্পট যাতে ট্রানজেকশন সেভিং এবং ফিন্যান্স অ্যাডভাইস উভয়ই করতে পারে
             system_prompt = f"""
             You are 'FinAI', an expert personal financial advisor, mentor, and transaction parser for a user in Bangladesh.
             
@@ -630,7 +630,7 @@ def finai_process_api(request):
                Valid Expense Categories: Tuition & Fees, Books & Notes, Stationery, Courses & Training, Mess / Hall Bill, Restaurants & Fast Food, Tea & Snacks, Groceries, Bus / Local Transport, Rickshaw & CNG, Bike Fuel / Maintenance, Tour & Travel, Rent / Room Rent, Electricity & Gas, Internet & WiFi, Mobile Recharge, bKash / Nagad, Clothing & Tailoring, Personal Care, Medical & Pharmacy, Fitness & Gym, Entertainment & Movies, Gadgets & Electronics, Home Maintenance, Charity & Donation, Family & Friends, Pet Care, Miscellaneous, Emergency Expense
                Valid Income Categories: Job, Business, Freelancing, Tuition, Gift, Money Back, Pocket Money
             
-            2. If the user message is a financial question, balance check, budgeting advice, or investment query (e.g., "এই মাসে খরচ কেমন হলো?", "কোথায় ইনভেস্ট করলে ভালো রিটার্ন পাব?", "মাস শেষে টাকা থাকবে নাকি?", "আজ বাস এ কত খরচ হইছে?"), set:
+            2. If the user message is a financial question, balance check, budgeting advice, or investment query (e.g., "এই মাসে খরচ কেমন হলো?", "কোথায় ইনভেস্ট করলে ভালো রিটার্ন পাব?", "মাস শেষে টাকা থাকবে নাকি?", "আজ বাস এ কত খরচ হইছে?"), set:
                - "action": "advice"
                - "reply": Provide a practical, encouraging, and detailed response in Bengali using their real financial data and Bangladesh market context.
 
@@ -667,11 +667,11 @@ def finai_process_api(request):
                 else:
                     bot_reply = "দয়া করে সঠিক টাকার পরিমাণ উল্লেখ করুন।"
             else:
-                bot_reply = ai_data.get('reply', 'দুঃখিত, বিষয়টি বুঝতে পারিনি। আবার চেষ্টা করুন।')
+                bot_reply = ai_data.get('reply', 'দুঃখিত, বিষয়টি বুঝতে পারিনি। আবার চেষ্টা করুন।')
 
             return JsonResponse({'status': 'success', 'reply': bot_reply})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'reply': f"সিস্টেমে একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।"}, status=400)
+            return JsonResponse({'status': 'error', 'reply': f"সিস্টেমে একটি সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।"}, status=400)
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
