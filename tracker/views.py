@@ -626,7 +626,8 @@ def finai_process_api(request):
             Do not include markdown formatting like ```json ... ```.
             """
 
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # এখানে জেমিনি মডেলের নাম সঠিক কনভেনশনে আপডেট করা হলো
+            model = genai.GenerativeModel('gemini-1.5-flash-latest')
             response = model.generate_content(system_prompt)
             clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
             
