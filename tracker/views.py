@@ -634,7 +634,8 @@ def finai_process_api(request):
                 response_format={"type": "json_object"}
             )
             
-            clean_text = response.choices.message.content.strip()
+            # এখানে ঠিক করা হয়েছে (choices[0] ব্যবহার করে)
+            clean_text = response.choices[0].message.content.strip()
             ai_data = json.loads(clean_text)
             action = ai_data.get('action', 'advice')
 
