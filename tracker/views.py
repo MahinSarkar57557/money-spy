@@ -624,12 +624,8 @@ def finai_process_api(request):
             Do not include markdown formatting like ```json ... ```.
             """
 
-            # এখানে জেমিনি মডেলের ডাইনামিক ট্রাই-কচ ফিক্স যুক্ত করা হলো
-            try:
-                model = genai.GenerativeModel('gemini-1.5-flash')
-            except Exception:
-                model = genai.GenerativeModel('gemini-pro')
-
+            # এখানে gemini-2.5-flash মডেল ব্যবহার করা হয়েছে যা বর্তমানে সম্পূর্ণ সচল ও ত্রুটিমুক্ত
+            model = genai.GenerativeModel('gemini-2.5-flash')
             response = model.generate_content(system_prompt)
             clean_text = response.text.strip().replace('```json', '').replace('```', '').strip()
             
