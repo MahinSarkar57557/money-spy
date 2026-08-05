@@ -5,7 +5,7 @@ import math
 import io
 import json
 import os
-from openai import OpenAI  # OpenAI লাইব্রেরি ইমপোর্ট করা হলো
+from groq import Groq  # Groq লাইব্রেরি ইমপোর্ট করা হলো
 from django.http import FileResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -584,11 +584,11 @@ def finai_process_api(request):
             if not user_message:
                 return JsonResponse({'status': 'error', 'reply': 'দয়া করে কিছু লিখে বা বলে পাঠান।'})
 
-            api_key = os.environ.get("OPENAI_API_KEY")
+            api_key = os.environ.get("GROQ_API_KEY")
             if not api_key:
-                return JsonResponse({'status': 'error', 'reply': 'সার্ভারে OpenAI এপিআই কি কনফিগার করা নেই।'})
+                return JsonResponse({'status': 'error', 'reply': 'সার্ভারে Groq এপিআই কি কনফিগার করা নেই।'})
 
-            client = OpenAI(api_key=api_key)
+            client = Groq(api_key=api_key)
 
             user_transactions = Transaction.objects.filter(user=request.user)
             total_inc = sum(t.amount for t in user_transactions if t.transaction_type == 'income')
@@ -624,9 +624,9 @@ def finai_process_api(request):
             Do not include markdown formatting like ```json ... ```.
             """
 
-            # OpenAI মডেল দিয়ে কল করা
+            # Groq Llama মডেল দিয়ে কল করা
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
@@ -634,7 +634,7 @@ def finai_process_api(request):
                 response_format={"type": "json_object"}
             )
             
-            clean_text = response.choices[0].message.content.strip()
+            clean_text = response.choices.message.content.strip()
             ai_data = json.loads(clean_text)
             action = ai_data.get('action', 'advice')
 
